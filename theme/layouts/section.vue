@@ -8,14 +8,18 @@ import { usePlas } from '../composables/usePlas'
 defineProps<{ question?: string }>()
 const p = usePlas()
 const num = computed(() => String(p.section.value?.index ?? 0).padStart(2, '0'))
+
+/** Polígono del panel en coordenadas de la diapositiva (igual que su clip-path). */
+const PANEL: [number, number][] = [[0, 0], [380, 0], [296.4, 540], [0, 540]]
+/** El número de la sección es zona reservada para la malla. */
+const NUMBER = { x: 40, y: 368, w: 215, h: 130 }
 </script>
 
 <template>
   <div class="slidev-layout plas plas-section" :data-line="p.line.value ?? undefined" :data-mono="p.mono.value">
-    <div class="plas-section__panel">
-      <NetworkMesh :width="340" :height="330" :nodes="14" :seed="(p.section.value?.index ?? 1) * 17" />
-      <span class="plas-section__num">{{ num }}</span>
-    </div>
+    <div class="plas-section__panel" />
+    <NetworkMesh class="plas-section__mesh" :region="PANEL" :avoid="[NUMBER]" :seed="(p.section.value?.index ?? 1) * 17" />
+    <span class="plas-section__num">{{ num }}</span>
     <div class="plas-section__text">
       <slot />
       <p v-if="question" class="plas-section__question">{{ question }}</p>
@@ -30,7 +34,7 @@ const num = computed(() => String(p.section.value?.index ?? 0).padStart(2, '0'))
   position: absolute; top: 0; left: 0; bottom: 0; width: 380px; background: var(--soft);
   clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
 }
-.plas-section__panel :deep(.plas-mesh) { position: absolute; left: 0; top: 10px; opacity: .5; }
+.plas-section__mesh { opacity: .5; }
 .plas-section__num {
   position: absolute; left: var(--gutter); bottom: 48px;
   font: 700 120px / 1 var(--font-display); letter-spacing: -0.04em; color: var(--deep);

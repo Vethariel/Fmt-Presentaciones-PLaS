@@ -13,13 +13,15 @@ const props = defineProps<{
 }>()
 const p = usePlas()
 const meta = computed(() => [props.place, props.date].filter(Boolean).join(' · '))
+
+/** Polígono del panel en coordenadas de la diapositiva (igual que su clip-path). */
+const PANEL: [number, number][] = [[632.4, 0], [960, 0], [960, 540], [540, 540]]
 </script>
 
 <template>
   <div class="slidev-layout plas plas-cover" :data-line="p.deckLine.value ?? undefined" :data-mono="p.mono.value">
-    <div class="plas-cover__panel">
-      <NetworkMesh :width="420" :height="540" :nodes="20" :seed="11" />
-    </div>
+    <div class="plas-cover__panel" />
+    <NetworkMesh class="plas-cover__mesh" :region="PANEL" :seed="11" />
     <div class="plas-cover__text">
       <slot />
       <div v-if="speaker || email" class="plas-cover__author">
@@ -39,7 +41,7 @@ const meta = computed(() => [props.place, props.date].filter(Boolean).join(' · 
   background: linear-gradient(168deg, var(--soft) 0%, color-mix(in srgb, var(--soft) 55%, #fff) 100%);
   clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
 }
-.plas-cover__panel :deep(.plas-mesh) { opacity: .55; }
+.plas-cover__mesh { opacity: .55; }
 .plas-cover__text { position: absolute; left: var(--gutter); top: 120px; width: 560px; }
 .plas-cover__text :deep(h1) { font-size: 44px; line-height: 1.08; letter-spacing: -0.02em; }
 .plas-cover__text :deep(h2) { font-size: 21px; margin-top: 12px; }

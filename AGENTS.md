@@ -8,7 +8,7 @@ Este repositorio contiene el **sistema de diseño** de las presentaciones del gr
 
 | Carpeta | Contenido |
 |---|---|
-| `docs/` | Decisiones numeradas (01–06). Léalas antes de cambiar el sistema |
+| `docs/` | Decisiones numeradas (01–07). Léalas antes de cambiar el sistema |
 | `brand/` | Logos PLaS (SVG redibujados) y escudo UNAL |
 | `theme/` | `slidev-theme-plas`: tokens (`styles/`), maquetas (`layouts/`), componentes, tema de sintaxis (`setup/shiki.ts`) y validador (`bin/plas-check.mjs`) |
 | `poc/` | Presentación de prueba de concepto; sirve también como prueba de regresión visual |

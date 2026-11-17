@@ -1,78 +1,217 @@
 <script setup lang="ts">
-import { useNav } from '@slidev/client'
-import { computed } from 'vue'
-
 /**
- * Malla de grafos (motivo del sitio web PLaS).
- * Web: nodos que "respiran" y aristas con flujo. PDF: estática (misma composición).
+ * Malla de grafos PLaS (motivo del sitio web).
+ *
+ * Web: los nodos derivan, el grupo flota y rota de forma oscilante (±7°, 40 s),
+ * y todo se ajusta en cada cuadro a la región y a las zonas reservadas.
+ * PDF / vista general / movimiento reducido: estado inicial estático
+ * (misma composición que la web al cargar).
+ *
+ * Coordenadas: las de la diapositiva (960 × 540). El componente ocupa todo el lienzo.
  */
+import { useIsSlideActive, useNav, useSlideContext } from '@slidev/client'
+import { computed, onBeforeUnmount, watch } from 'vue'
+import type { Point, Rect } from '../composables/meshEngine'
+import {
+  buildPlan,
+  constrain,
+  MORPH_MS,
+  groupTransform,
+  RESEED_EVERY,
+  rotate,
+} from '../composables/meshEngine'
+
 const props = withDefaults(defineProps<{
-  width?: number
-  height?: number
-  nodes?: number
+  /** Polígono convexo (coordenadas de la diapositiva) donde vive la malla */
+  region: Point[]
+  /** Zonas que los nodos no invaden (número de sección, texto…) */
+  avoid?: Rect[]
+  density?: number
+  neighbors?: number
   seed?: number
-  /** Color: cualquier valor CSS; por defecto el color de la línea */
   color?: string
-}>(), { width: 400, height: 540, nodes: 22, seed: 7, color: 'var(--base)' })
+}>(), { avoid: () => [], density: 0.95, neighbors: 3, seed: 42, color: 'var(--base)' })
 
+const plan = computed(() => buildPlan({
+  region: props.region,
+  avoid: props.avoid,
+  density: props.density,
+  neighbors: props.neighbors,
+  seed: props.seed,
+}))
+const initial = computed(() => plan.value.seeds[0])
+const clipId = `plas-mesh-${Math.random().toString(36).slice(2, 9)}`
+const regionPoints = computed(() => props.region.map(p => p.join(',')).join(' '))
+
+// Elementos SVG (se actualizan imperativamente, como en el sitio)
+const circles: SVGCircleElement[] = []
+const lines: SVGLineElement[] = []
+
+// ── Animación ──
 const { isPrintMode } = useNav()
+const { $renderContext } = useSlideContext()
+const isActive = useIsSlideActive()
+const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const shouldAnimate = computed(() =>
+  !isPrintMode.value && !reduced && isActive.value
+  && ['slide', 'presenter'].includes($renderContext?.value as string),
+)
 
-function rng(seed: number) {
-  let s = seed >>> 0
-  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296)
+let local: Point[] = []
+let vel: Point[] = []
+let elapsed = 0
+let lastNow = 0
+let sinceReseed = 0
+let reseeds = 0
+let activeSeed = 0
+let frame = 0
+let raf = 0
+let morph: { from: Point[], to: Point[], t: number } | null = null
+
+function reset() {
+  local = initial.value.map(p => [p[0], p[1]] as Point)
+  vel = plan.value.velocities.map(v => [v[0], v[1]] as Point)
+  elapsed = 0
+  sinceReseed = 0
+  reseeds = 0
+  activeSeed = 0
+  morph = null
+}
+reset()
+watch(plan, reset)
+
+/** Cambio de variante: deslizamiento suave (ease in-out) desde la posición actual. */
+function reseed() {
+  reseeds += 1
+  if (reseeds % 2 === 0)
+    activeSeed = (activeSeed + 1) % plan.value.seeds.length
+  morph = {
+    from: local.map(p => [p[0], p[1]] as Point),
+    to: plan.value.seeds[activeSeed].map(p => [p[0], p[1]] as Point),
+    t: 0,
+  }
+}
+const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2)
+
+function tick(now: number) {
+  const dt = lastNow ? Math.min(now - lastNow, 64) : 16
+  lastNow = now
+  elapsed += dt
+  sinceReseed += dt
+  const { maxLink, center } = plan.value
+  const { ox, oy, theta } = groupTransform(elapsed)
+  const k = dt / 16.67 // velocidades del sitio están en px por cuadro a 60 fps
+
+  if (morph) {
+    morph.t = Math.min(1, morph.t + dt / MORPH_MS)
+    const e = ease(morph.t)
+    local.forEach((p, i) => {
+      p[0] = morph!.from[i][0] + (morph!.to[i][0] - morph!.from[i][0]) * e
+      p[1] = morph!.from[i][1] + (morph!.to[i][1] - morph!.from[i][1]) * e
+    })
+    if (morph.t >= 1)
+      morph = null
+  }
+
+  const world: Point[] = local.map((p, i) => {
+    if (!morph) {
+      p[0] += vel[i][0] * k
+      p[1] += vel[i][1] * k
+    }
+    const r = rotate([p[0] - center[0], p[1] - center[1]], theta)
+    const w: Point = [r[0] + center[0] + ox, r[1] + center[1] + oy]
+    // Ajuste en coordenadas de la diapositiva → corrección llevada al marco local
+    const { d, n } = constrain(w, props.region, props.avoid, 20)
+    if (d[0] || d[1]) {
+      w[0] += d[0]
+      w[1] += d[1]
+      const dl = rotate(d, -theta)
+      p[0] += dl[0]
+      p[1] += dl[1]
+      if (n) {
+        const nl = rotate(n, -theta)
+        const vn = vel[i][0] * nl[0] + vel[i][1] * nl[1]
+        if (vn < 0) {
+          vel[i][0] -= 2 * vn * nl[0]
+          vel[i][1] -= 2 * vn * nl[1]
+        }
+      }
+    }
+    return w
+  })
+
+  if (++frame % 2 === 0) {
+    world.forEach(([x, y], i) => {
+      circles[i]?.setAttribute('cx', x.toFixed(2))
+      circles[i]?.setAttribute('cy', y.toFixed(2))
+    })
+    plan.value.pairs.forEach(([a, b], e) => {
+      const el = lines[e]
+      if (!el)
+        return
+      const [x1, y1] = world[a]
+      const [x2, y2] = world[b]
+      el.setAttribute('x1', x1.toFixed(2))
+      el.setAttribute('y1', y1.toFixed(2))
+      el.setAttribute('x2', x2.toFixed(2))
+      el.setAttribute('y2', y2.toFixed(2))
+      // Aristas elásticas: se desvanecen si los nodos se separan demasiado
+      const len = Math.hypot(x2 - x1, y2 - y1)
+      el.style.strokeOpacity = String(Math.max(0, Math.min(1, (1.3 * maxLink - len) / (0.3 * maxLink))))
+    })
+  }
+
+  if (sinceReseed >= RESEED_EVERY) {
+    sinceReseed = 0
+    reseed()
+  }
+  raf = requestAnimationFrame(tick)
 }
 
-const graph = computed(() => {
-  const r = rng(props.seed)
-  const m = 24
-  const pts = Array.from({ length: props.nodes }, (_, i) => ({
-    i,
-    x: m + r() * (props.width - 2 * m),
-    y: m + r() * (props.height - 2 * m),
-    r: 3 + r() * 5,
-    d: r() * 4,
-  }))
-  const edges: { a: typeof pts[number], b: typeof pts[number], k: string, d: number }[] = []
-  const seen = new Set<string>()
-  for (const p of pts) {
-    const near = pts.filter(q => q !== p)
-      .map(q => ({ q, dist: Math.hypot(p.x - q.x, p.y - q.y) }))
-      .sort((u, v) => u.dist - v.dist).slice(0, 2)
-    for (const { q } of near) {
-      const k = [p.i, q.i].sort((a, b) => a - b).join('-')
-      if (!seen.has(k)) { seen.add(k); edges.push({ a: p, b: q, k, d: r() * 3 }) }
-    }
+function start() {
+  if (!raf) {
+    lastNow = 0
+    raf = requestAnimationFrame(tick)
   }
-  return { pts, edges }
-})
+}
+function stop() {
+  if (raf)
+    cancelAnimationFrame(raf)
+  raf = 0
+}
+watch(shouldAnimate, on => (on ? start() : stop()), { immediate: true })
+onBeforeUnmount(stop)
 </script>
 
 <template>
-  <svg class="plas-mesh" :class="{ 'is-static': isPrintMode }" :viewBox="`0 0 ${width} ${height}`"
-       :width="width" :height="height" :style="{ color }" aria-hidden="true">
-    <g class="plas-mesh__edges">
-      <line v-for="e in graph.edges" :key="e.k" :x1="e.a.x" :y1="e.a.y" :x2="e.b.x" :y2="e.b.y"
-            :style="{ animationDelay: `${-e.d}s` }" />
-    </g>
-    <g class="plas-mesh__nodes">
-      <circle v-for="p in graph.pts" :key="p.i" :cx="p.x" :cy="p.y" :r="p.r"
-              :style="{ animationDelay: `${-p.d}s`, transformOrigin: `${p.x}px ${p.y}px` }" />
+  <svg class="plas-mesh" viewBox="0 0 960 540" width="960" height="540" :style="{ color }" aria-hidden="true">
+    <defs>
+      <clipPath :id="clipId">
+        <polygon :points="regionPoints" />
+      </clipPath>
+    </defs>
+    <g :clip-path="`url(#${clipId})`" class="plas-mesh__group">
+      <g class="plas-mesh__edges">
+        <line
+          v-for="([a, b], e) in plan.pairs" :key="`${a}-${b}`"
+          :ref="(el) => { lines[e] = el as SVGLineElement }"
+          :x1="initial[a][0]" :y1="initial[a][1]" :x2="initial[b][0]" :y2="initial[b][1]"
+        />
+      </g>
+      <g class="plas-mesh__nodes">
+        <circle
+          v-for="(p, i) in initial" :key="i"
+          :ref="(el) => { circles[i] = el as SVGCircleElement }"
+          :cx="p[0]" :cy="p[1]" :r="plan.radii[i]"
+        />
+      </g>
     </g>
   </svg>
 </template>
 
 <style scoped>
-.plas-mesh { display: block; overflow: visible; }
-.plas-mesh__edges line {
-  stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; opacity: 0.45;
-  stroke-dasharray: 6 5; animation: plas-flow 3s linear infinite;
-}
-.plas-mesh__nodes circle {
-  fill: currentColor; opacity: 0.85;
-  animation: plas-breathe 4s ease-in-out infinite;
-}
-.plas-mesh.is-static line, .plas-mesh.is-static circle { animation: none; }
-.plas-mesh.is-static line { stroke-dasharray: none; }
-@keyframes plas-flow { to { stroke-dashoffset: -22; } }
-@keyframes plas-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.plas-mesh { position: absolute; inset: 0; display: block; pointer-events: none; }
+/* Estilo del sitio: aristas sólidas, nodos uniformes */
+.plas-mesh__edges line { stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; opacity: .5; }
+.plas-mesh__nodes circle { fill: currentColor; opacity: .78; }
 </style>
