@@ -191,6 +191,11 @@ async function renderChecks() {
                 out.push({ rule: 'contenido-desborda', msg: `"${name(el)}" invade el pie (sobran ${Math.round(r.bottom - B.bottom)} px).` })
                 break
               }
+              // Con el cuerpo centrado, el exceso también sale hacia arriba, sobre el título
+              if (r.height > 0 && r.top < B.top - 2) {
+                out.push({ rule: 'contenido-desborda', msg: `"${name(el)}" invade el título (sobran ${Math.round(B.top - r.top)} px).` })
+                break
+              }
             }
           }
           const h1 = root.querySelector('.plas-content__head h1')

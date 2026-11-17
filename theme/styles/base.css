@@ -44,7 +44,7 @@
   color: var(--ink);
 }
 .slidev-layout.plas h2 {
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   font-family: var(--font-display);
   font-size: var(--fs-subtitle);
   font-weight: 500;
@@ -87,6 +87,10 @@
 .slidev-layout.plas ul {
   list-style: none;
 }
+.slidev-layout.plas ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+}
 .slidev-layout.plas ul > li {
   position: relative;
 }
@@ -100,10 +104,10 @@
   border-radius: 2px;
   background: var(--base);
 }
-.slidev-layout.plas ul ul > li::before {
+.slidev-layout.plas li li::before {
   width: 5px;
   height: 5px;
-  background: var(--rule);
+  background: color-mix(in srgb, var(--muted) 55%, white);
 }
 .slidev-layout.plas li {
   line-height: 1.45;
@@ -181,18 +185,26 @@
   position: absolute;
   left: var(--gutter);
   right: var(--gutter);
-  top: 58px;
-  bottom: 56px;
+  top: 68px;
+  bottom: 52px;
   display: flex;
   flex-direction: column;
 }
 .plas-content__head {
   flex: none;
-  margin-bottom: 22px;
+  margin-bottom: 8px;
 }
+/* El cuerpo se centra verticalmente entre el encabezado y el pie */
 .plas-content__body {
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 0;
+}
+.plas-content__body > :last-child {
+  margin-bottom: 0;
 }
 
 /* Movimiento reducido */

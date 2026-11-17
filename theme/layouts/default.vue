@@ -25,5 +25,6 @@ const Body = () => splitHead(slots.default?.()).body
 </template>
 
 <style scoped>
-.plas-content__body.has-aside { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 36px; }
+.plas-content__body.has-aside { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 36px; align-content: center; align-items: center; }
+.plas-content__main > :last-child { margin-bottom: 0; }
 </style>

@@ -24,4 +24,8 @@ const Body = () => splitHead(slots.default?.()).body
 <style scoped>
 .plas-code { --slidev-code-font-size: 16px; }
 .plas-code .plas-content__body :deep(p) { font-size: var(--fs-small); color: var(--muted); }
+/* Código animado: anclado arriba para que se transforme en su sitio (centrado saltaría entre pasos) */
+.plas-code .plas-content__body:has(.slidev-code-magic-move) { justify-content: flex-start; padding-top: 24px; }
+.plas-code .plas-content__body :deep(.slidev-code-wrapper + p),
+.plas-code .plas-content__body :deep(pre + p) { margin-top: 12px; }
 </style>

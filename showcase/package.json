@@ -1,0 +1,15 @@
+{
+  "name": "plas-showcase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open=false",
+    "build": "slidev build --base /",
+    "check": "plas-check slides.md --render",
+    "export": "slidev export --executable-path /usr/bin/google-chrome --output export/plas-showcase.pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "53.1.0",
+    "slidev-theme-plas": "*"
+  }
+}
