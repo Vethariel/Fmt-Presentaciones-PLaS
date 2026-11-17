@@ -1,0 +1,18 @@
+{
+  "name": "presentacion-plas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open=false",
+    "build": "slidev build",
+    "check": "plas-check slides.md --render",
+    "export": "slidev export --output export/presentacion.pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "53.1.0",
+    "slidev-theme-plas": "0.1.0"
+  },
+  "devDependencies": {
+    "playwright-chromium": "1.65.1"
+  }
+}

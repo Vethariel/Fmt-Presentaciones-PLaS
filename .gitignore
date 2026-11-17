@@ -1,0 +1,8 @@
+node_modules
+dist
+export
+.slidev
+
+# Material de referencia de terceros (curso de Métodos Numéricos), no se versiona
+1. Introduction.pdf
+7. Ordinary Differential Equations.pdf

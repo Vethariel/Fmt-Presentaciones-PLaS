@@ -1,0 +1,15 @@
+{
+  "name": "plas-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open=false",
+    "build": "slidev build --base /",
+    "export": "slidev export --executable-path /usr/bin/google-chrome --output export/plas-poc.pdf",
+    "check": "plas-check slides.md --render"
+  },
+  "dependencies": {
+    "@slidev/cli": "53.1.0",
+    "slidev-theme-plas": "*"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "plas-slides",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "theme",
+    "poc"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w poc",
+    "build": "npm run build -w poc",
+    "export": "npm run export -w poc",
+    "check": "npm run build && npm run check -w poc",
+    "test:check": "cd poc && slidev build ../tools/check/fixtures/malo/slides.md --out dist --base / && cd .. && node theme/bin/plas-check.mjs tools/check/fixtures/malo/slides.md --render; test $? -eq 1"
+  },
+  "devDependencies": {
+    "playwright-chromium": "1.65.1"
+  }
+}

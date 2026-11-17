@@ -1,0 +1,84 @@
+/*
+ * Tokens del sistema PLaS.
+ * Fuente: identidad del sitio web (web_plas/src/styles/global.css) y docs/05.
+ * Las presentaciones NO deben redefinir estos valores.
+ */
+
+:root {
+  /* Marca */
+  --plas-mint: #3ad4b5;
+  --plas-soft: #d0f3ec;
+  --plas-dark: #0e6b5c;
+  --plas-deep: #0c4f48;
+  --plas-gradient: linear-gradient(90deg, #92f9b9 0%, #0099db 100%);
+
+  /* Superficie y texto */
+  --ink: #2a2f2e;
+  --muted: #5c6563;
+  --rule: #d5e3df;
+  --surface: #f5f8f7;
+  --page: #ffffff;
+
+  /* Tipografía */
+  --font-display: 'Onest Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Source Sans 3 Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-quote: 'Source Serif 4 Variable', Georgia, serif;
+  --font-code: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  /* Escala tipográfica (lienzo 960 × 540) */
+  --fs-title: 34px;
+  --fs-subtitle: 19px;
+  --fs-body: 20px;
+  --fs-small: 15px;
+  --fs-chrome: 12.5px;
+  --fs-code: 15px;
+
+  /* Espaciado */
+  --gutter: 48px;
+  --radius: 8px;
+}
+
+/* Familia de color activa. Por defecto: marca. */
+.plas {
+  --base: var(--plas-mint);
+  --soft: var(--plas-soft);
+  --dark: var(--plas-dark);
+  --deep: var(--plas-deep);
+}
+
+/* Familias por línea (docs/05, sección 5). --base nunca se usa para texto. */
+.plas[data-line='lenguajes'] {
+  --base: #00c9a7;
+  --soft: #d0f3ec;
+  --dark: #0e6b5c;
+  --deep: #0c4f48;
+}
+.plas[data-line='educacion'] {
+  --base: #ff9f1a;
+  --soft: #fbe7cc;
+  --dark: #7a530e;
+  --deep: #5a3e0f;
+}
+.plas[data-line='embebidos'] {
+  --base: #2f89ef;
+  --soft: #ddecfe;
+  --dark: #2c5d98;
+  --deep: #224570;
+}
+.plas[data-line='transporte'] {
+  --base: #ff6b4a;
+  --soft: #fee3dd;
+  --dark: #923f2c;
+  --deep: #6c2f22;
+}
+.plas[data-line='sensado'] {
+  --base: #b14fd8;
+  --soft: #f6e2ff;
+  --dark: #77418e;
+  --deep: #583169;
+}
+
+/* Comparación de fuentes monoespaciadas (pendiente de decisión, docs/05 §6) */
+.plas[data-mono='source-code-pro'] {
+  --font-code: 'Source Code Pro Variable', ui-monospace, monospace;
+}
