@@ -163,6 +163,8 @@ Los componentes propios de la presentación van en `components/`. Todo component
 | `<NetworkMesh>` | Malla de grafos decorativa (la usan portada y separadores) | Estática |
 | `<LogoRow>` | Fila de logos UNAL │ Facultad │ PLaS | Igual |
 
+**Navegación automática:** la agenda, la miga de pan y el panel lateral de capítulos (se abre al llevar el mouse al borde izquierdo o con la tecla C, solo en la web) se generan a partir de los separadores (`layout: section`). Dé a cada separador un título corto y claro: es el nombre del capítulo en todos esos lugares.
+
 `v-click` revela elementos paso a paso en la web; en el PDF se muestra el estado final. Use `v-click` solo cuando el estado final tiene sentido por sí mismo.
 
 ## Límites de contenido (los verifica el validador)

@@ -29,6 +29,41 @@ export interface PlasSection {
   last: number
 }
 
+const layoutOf = (s: any) => s?.meta?.layout ?? s?.meta?.slide?.frontmatter?.layout
+
+/** Título visible de una diapositiva (frontmatter `title` o su primer `#`). */
+export const slideTitle = (s: any): string => s?.meta?.slide?.frontmatter?.title ?? s?.meta?.slide?.title ?? ''
+
+/**
+ * Secciones de la presentación a partir de las diapositivas `layout: section`.
+ * Función pura: la usan las maquetas (vía usePlas) y el panel de capítulos.
+ */
+export function buildSections(slides: any[]): PlasSection[] {
+  const list: PlasSection[] = []
+  for (const s of slides) {
+    if (layoutOf(s) !== 'section')
+      continue
+    const fm = s?.meta?.slide?.frontmatter ?? {}
+    const index = list.length + 1
+    list.push({
+      no: s.no,
+      index,
+      title: slideTitle(s) || `Sección ${index}`,
+      line: isLine(fm.line) ? fm.line : LINE_ORDER[(index - 1) % LINE_ORDER.length],
+      first: s.no,
+      last: s.no,
+    })
+  }
+  list.forEach((sec, i) => {
+    sec.last = i + 1 < list.length ? list[i + 1].no - 1 : slides.length
+  })
+  return list
+}
+
+export function agendaNoOf(slides: any[]): number {
+  return slides.find(s => layoutOf(s) === 'agenda')?.no ?? 1
+}
+
 /**
  * Estado del sistema PLaS para la diapositiva actual.
  *
@@ -46,28 +81,7 @@ export function usePlas() {
 
   const deckLine = computed<LineId | null>(() => (isLine(config.value.line) ? config.value.line : null))
 
-  const sections = computed<PlasSection[]>(() => {
-    const list: PlasSection[] = []
-    for (const s of slides.value) {
-      const fm = s?.meta?.slide?.frontmatter ?? {}
-      const layout = s?.meta?.layout ?? fm.layout
-      if (layout !== 'section')
-        continue
-      const index = list.length + 1
-      list.push({
-        no: s.no,
-        index,
-        title: fm.title ?? s?.meta?.slide?.title ?? `Sección ${index}`,
-        line: isLine(fm.line) ? fm.line : LINE_ORDER[(index - 1) % LINE_ORDER.length],
-        first: s.no,
-        last: s.no,
-      })
-    }
-    list.forEach((sec, i) => {
-      sec.last = i + 1 < list.length ? list[i + 1].no - 1 : total.value
-    })
-    return list
-  })
+  const sections = computed<PlasSection[]>(() => buildSections(slides.value))
 
   const section = computed<PlasSection | null>(() => {
     let current: PlasSection | null = null
@@ -89,10 +103,7 @@ export function usePlas() {
     return { current: $page.value - sec.first, total: sec.last - sec.first }
   })
 
-  const agendaNo = computed(() => {
-    const s = slides.value.find(s => (s?.meta?.layout ?? s?.meta?.slide?.frontmatter?.layout) === 'agenda')
-    return s?.no ?? 1
-  })
+  const agendaNo = computed(() => agendaNoOf(slides.value))
 
   const event = computed<string>(() => config.value.event ?? 'Grupo PLaS')
   const mono = computed<string | undefined>(() => config.value.mono)
