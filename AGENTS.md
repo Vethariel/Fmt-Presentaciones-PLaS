@@ -31,6 +31,6 @@ npm run test:check               # el validador DEBE fallar con la presentación
 1. **La identidad viene de `web_plas`**: tokens de color, fuentes y logo (docs/04, docs/05). No invente colores nuevos.
 2. **Paridad web ⇄ PDF**: todo componente animado o interactivo necesita una versión impresa (docs/03 §5).
 3. **Las reglas suben de nivel**: si una regla de `template/AGENTS.md` se puede imponer desde el tema (nivel 1) o comprobar en `plas-check` (nivel 2), muévala allí (docs/03 §8.1).
-4. **Listas sincronizadas**: las maquetas y las líneas están en `theme/composables/usePlas.ts` y en `theme/bin/plas-check.mjs`. Si cambia una, cambie la otra y `template/AGENTS.md`.
+4. **Listas sincronizadas**: las maquetas y las líneas están en `theme/composables/usePlas.ts` y en `theme/bin/plas-check.mjs`. Si cambia una, cambie la otra y `template/AGENTS.md`. Las figuras de la malla (`theme/composables/meshFigures.json`) y sus límites (`theme/utils/figureRules.mjs`) tienen una sola fuente, compartida por el tema y el validador; si cambian, actualice docs/07 §6 y `template/AGENTS.md`.
 5. **Contraste**: el color base de una línea nunca va en texto; use `--dark` (docs/04 §4).
 6. Después de cualquier cambio: `npm run check`, `npm run test:check` y revisar el PDF exportado.

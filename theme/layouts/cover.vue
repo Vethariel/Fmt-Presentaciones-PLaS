@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import LogoRow from '../components/LogoRow.vue'
 import NetworkMesh from '../components/NetworkMesh.vue'
+import { resolveFigures } from '../composables/figures'
 import { usePlas } from '../composables/usePlas'
 
 const props = defineProps<{
@@ -10,18 +11,23 @@ const props = defineProps<{
   email?: string
   place?: string
   date?: string
+  /** Figura de la malla (opcional, docs/07 §6) */
+  mesh?: unknown
 }>()
 const p = usePlas()
 const meta = computed(() => [props.place, props.date].filter(Boolean).join(' · '))
 
 /** Polígono del panel en coordenadas de la diapositiva (igual que su clip-path). */
 const PANEL: [number, number][] = [[632.4, 0], [960, 0], [960, 540], [540, 540]]
+/** Caja de la figura dentro del panel. */
+const BOX = { x: 660, y: 60, w: 260, h: 420 }
+const figures = computed(() => resolveFigures(props.mesh))
 </script>
 
 <template>
   <div class="slidev-layout plas plas-cover" :data-line="p.deckLine.value ?? undefined" :data-mono="p.mono.value">
     <div class="plas-cover__panel" />
-    <NetworkMesh class="plas-cover__mesh" :region="PANEL" :seed="11" />
+    <NetworkMesh class="plas-cover__mesh" :region="PANEL" :seed="11" :figures="figures" :box="BOX" />
     <div class="plas-cover__text">
       <slot />
       <div v-if="speaker || email" class="plas-cover__author">

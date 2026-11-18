@@ -62,3 +62,71 @@ El validador (`plas-check --render`) pasa con 0 errores, y el PDF exportado mues
 **Uso:** `<NetworkMesh :region="PANEL" :avoid="[ZONA]" :seed="n" />`. La región debe ser un polígono **convexo** en coordenadas de la diapositiva (960 × 540).
 
 **Pendiente:** el motor está copiado del sitio web. Si cambia el del sitio, conviene extraer la lógica común a un módulo compartido por los dos repositorios.
+
+## 6. Modo figura: dibujar con la malla
+
+**Fecha:** 2026-11-18
+
+Una malla genérica funciona, pero si los nodos dibujan algo del tema, la portada y los separadores ganan pertinencia. En modo figura, los nodos forman un **dibujo mínimo**: la cantidad necesaria para que se reconozca, sin rellenar.
+
+**Jerarquía de malla.** Es una sola red con dos niveles de aristas sobre los mismos nodos:
+
+| Nivel | Qué es | Trazo |
+|---|---|---|
+| Principal | Las aristas del dibujo | 3,4 px, casi opacas; nodos de 3,5 a 8 px |
+| Secundaria | Muchas más uniones entre los **mismos** nodos (4 vecinos más cercanos de cada uno), más unos pocos **nodos de apoyo** (40 % de los del dibujo, entre 3 y 7) | 1 px, translúcidas; nodos de apoyo de 2,6 px |
+
+Los nodos de apoyo se colocan en la caja de la figura, lejos de los nodos del dibujo para no confundirlo, pero a distancia de vecino para tejerse con él. Se mueven con la figura: tienen ranura propia, respiran y derivan entre formas como los demás. La figura se lee primero por grosor, y la malla secundaria la convierte en red.
+
+### 6.1 Uso
+
+En el frontmatter de la portada o de un separador:
+
+```yaml
+mesh: embudo                 # una forma de la biblioteca
+mesh: [arbol, libro]         # varias: la malla deriva de una a la siguiente
+mesh:                        # una forma propia
+  angle: -30                 # opcional, en grados
+  nodes: [[0, 0], [50, 0, 1], [100, 0], [0, 60], [50, 60], [100, 60]]   # [x, y] o [x, y, tamaño 0–1]
+  edges: [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5]]
+```
+
+Sin `mesh` (o con `mesh: red`) se dibuja la malla aleatoria de siempre. Las coordenadas se escriben en cualquier unidad: el tema las normaliza y encaja la figura en una caja del panel (sobre el número, en los separadores).
+
+### 6.2 Biblioteca
+
+| Figura | Nodos | Aristas | Sugerida para |
+|---|---|---|---|
+| `libro` | 10 | 11 | Escritura, tesis, lectura |
+| `lapiz` | 7 | 9 | Redactar, taller |
+| `embudo` | 10 | 10 | Acotar, de lo general a lo particular |
+| `arbol` | 9 | 8 | Estructura, jerarquía, índice, árbol sintáctico |
+| `bombilla` | 11 | 13 | Idea, motivación, propuesta |
+| `lupa` | 7 | 7 | Búsqueda, revisión de literatura, análisis |
+
+Fuente única: `theme/composables/meshFigures.json`, que también lee `plas-check`. Para agregar una figura a la biblioteca, añádala allí con su `description`.
+
+### 6.3 Límites (nivel 2: los comprueba `plas-check`)
+
+| Regla | Límite |
+|---|---|
+| Nodos por forma | 6 a 18 |
+| Aristas por forma | 6 a 28, sin repetir |
+| Nodos sueltos | Ninguno: todo nodo tiene al menos una arista |
+| Formas por diapositiva | 1 a 4 |
+
+Fuente única: `theme/utils/figureRules.mjs` (la usan el tema y el validador). El mínimo evita dibujos que no se reconocen ni parecen una red; el máximo impide rellenar el panel.
+
+### 6.4 Movimiento: deriva consciente
+
+| Fase | Duración | Comportamiento |
+|---|---|---|
+| Ensamblaje | 3,6 s | La red llega dispersa por el panel y se ensambla en la primera forma; las aristas aparecen a medida que la figura toma forma |
+| Reposo | 7 s | La forma se mantiene para que se lea; cada nodo **respira** (2,5–5 px, periodos de 5 a 9 s) |
+| Deriva | 9 s | Hacia la forma siguiente con curva sinusoidal, (1 − cos πu) / 2: sale suave, acelera a mitad de camino y vuelve a suavizarse al llegar |
+
+No hay cambios rápidos ni deriva aleatoria. Cada nodo va al punto más cercano de la forma siguiente (asignación de menor recorrido), así que el trayecto es intencional. Si las formas tienen distinto número de nodos, los sobrantes se esconden (radio 0) dentro del nodo más cercano y salen de él cuando se necesitan. Las aristas que no están en la forma de destino se desvanecen con la misma curva. Después de la última forma vuelve a la primera. Cada vez que la diapositiva se activa, la figura se vuelve a ensamblar.
+
+Las uniones secundarias de cada forma se calculan por separado; en la deriva, las que no siguen se desvanecen con la misma curva.
+
+**Paridad:** el PDF, la vista general y `prefers-reduced-motion` muestran la primera forma terminada, con su malla secundaria, que también es el estado de la web al acabar el ensamblaje.

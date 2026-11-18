@@ -7,6 +7,7 @@ layout: cover
 
 ---
 layout: section
+mesh: [libro, cometa, { nodes: [[0, 0], [1, 1], [2, 0]], edges: [[0, 1]] }]
 ---
 
 # Sección sin línea definida

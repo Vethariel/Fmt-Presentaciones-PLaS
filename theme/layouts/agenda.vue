@@ -29,7 +29,7 @@ const p = usePlas()
 <style scoped>
 .plas-agenda__head { position: absolute; left: var(--gutter); top: 48px; }
 .plas-agenda__logo { position: absolute; right: var(--gutter); top: 44px; height: 40px; }
-.plas-agenda__list { position: absolute; left: var(--gutter); right: var(--gutter); top: 130px; margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.slidev-layout.plas .plas-agenda__list { position: absolute; left: var(--gutter); right: var(--gutter); top: 130px; margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 .plas-agenda__list li { margin: 0; background: none; }
 .plas-agenda__list li::before { display: none; }
 .plas-agenda__list button {

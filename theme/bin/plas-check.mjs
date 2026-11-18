@@ -17,10 +17,12 @@ import http from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 import { parseSync } from '@slidev/parser'
+import { FIGURE_LIMITS, figureErrors } from '../utils/figureRules.mjs'
 
 const LAYOUTS = ['cover', 'agenda', 'section', 'default', 'code', 'interactive']
 const LINES = ['lenguajes', 'educacion', 'embebidos', 'transporte', 'sensado']
 const CONTENT_LAYOUTS = ['default', 'code', 'interactive']
+const FIGURES = JSON.parse(fs.readFileSync(new URL('../composables/meshFigures.json', import.meta.url), 'utf8'))
 const LIMITS = { title: 50, sectionTitle: 40, subtitle: 90, bullets: 6, depth: 2, words: 110 }
 
 const args = process.argv.slice(2)
@@ -79,6 +81,28 @@ deck.slides.forEach((s, i) => {
       report('error', slide, 'seccion-sin-linea', 'El separador no define una línea válida en "line".', `Agregue "line: <${LINES.join('|')}>" al frontmatter.`)
     if (h1 && h1.length > LIMITS.sectionTitle)
       report('aviso', slide, 'titulo-largo', `El título de sección tiene ${h1.length} caracteres (máx. ${LIMITS.sectionTitle}).`, 'Acórtelo; el detalle va en "question".')
+  }
+
+  // Figura de la malla (docs/07 §6): solo en portada y separadores
+  if (fm.mesh !== undefined) {
+    if (!['cover', 'section'].includes(layout))
+      report('aviso', slide, 'figura-sin-malla', `"mesh" no tiene efecto en la maqueta "${layout}".`, 'Use "mesh" solo en la portada o en un separador.')
+    else {
+      const forms = Array.isArray(fm.mesh) ? fm.mesh : [fm.mesh]
+      if (forms.length < 1 || forms.length > FIGURE_LIMITS.maxForms)
+        report('error', slide, 'figura-invalida', `"mesh" tiene ${forms.length} formas (entre 1 y ${FIGURE_LIMITS.maxForms}).`, 'Deje solo las formas que dicen algo del tema.')
+      forms.forEach((m, k) => {
+        const where = forms.length > 1 ? ` (forma ${k + 1})` : ''
+        if (typeof m === 'string') {
+          if (!(m === 'red' && forms.length === 1) && !(m in FIGURES))
+            report('error', slide, 'figura-desconocida', `La figura "${m}"${where} no existe.`, `Use una de: ${Object.keys(FIGURES).join(', ')}; o dibuje una propia con { nodes, edges }.`)
+        }
+        else {
+          for (const e of figureErrors(m))
+            report('error', slide, 'figura-invalida', `${e}${where}`, `Dibuje con lo mínimo: ${FIGURE_LIMITS.minNodes}–${FIGURE_LIMITS.maxNodes} nodos [x, y], ${FIGURE_LIMITS.minEdges}–${FIGURE_LIMITS.maxEdges} aristas [i, j], todos los nodos unidos.`)
+        }
+      })
+    }
   }
 
   if (CONTENT_LAYOUTS.includes(layout)) {

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import NetworkMesh from '../components/NetworkMesh.vue'
+import { resolveFigures } from '../composables/figures'
 import symbol from '../assets/plas-symbol.svg?url'
 import { usePlas } from '../composables/usePlas'
 
-/** Separador de sección. Frontmatter: `line` (color), `question` (opcional). */
-defineProps<{ question?: string }>()
+/** Separador de sección. Frontmatter: `line` (color), `question` y `mesh` (figura, opcionales). */
+const props = defineProps<{ question?: string, mesh?: unknown }>()
+const figures = computed(() => resolveFigures(props.mesh))
 const p = usePlas()
 const num = computed(() => String(p.section.value?.index ?? 0).padStart(2, '0'))
 
@@ -13,12 +15,14 @@ const num = computed(() => String(p.section.value?.index ?? 0).padStart(2, '0'))
 const PANEL: [number, number][] = [[0, 0], [380, 0], [296.4, 540], [0, 540]]
 /** El número de la sección es zona reservada para la malla. */
 const NUMBER = { x: 40, y: 368, w: 215, h: 130 }
+/** Caja de la figura: la parte del panel sobre el número. */
+const BOX = { x: 28, y: 34, w: 262, h: 300 }
 </script>
 
 <template>
   <div class="slidev-layout plas plas-section" :data-line="p.line.value ?? undefined" :data-mono="p.mono.value">
     <div class="plas-section__panel" />
-    <NetworkMesh class="plas-section__mesh" :region="PANEL" :avoid="[NUMBER]" :seed="(p.section.value?.index ?? 1) * 17" />
+    <NetworkMesh class="plas-section__mesh" :region="PANEL" :avoid="[NUMBER]" :seed="(p.section.value?.index ?? 1) * 17" :figures="figures" :box="BOX" />
     <span class="plas-section__num">{{ num }}</span>
     <div class="plas-section__text">
       <slot />

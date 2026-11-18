@@ -160,8 +160,20 @@ Los componentes propios de la presentación van en `components/`. Todo component
 | `<Frames :labels="[…]">` | Tira de fotogramas: versión impresa de una animación | — (ya es estática) |
 | `<Interactive>` | Contenedor de herramientas | Obligatorio `<template #print>`; el PDF añade un QR a la web |
 | `<ProjectCard>` | Proyecto: `title`, `kind`, `level`, `people`, `funding` | Igual |
-| `<NetworkMesh>` | Malla de grafos decorativa (la usan portada y separadores) | Estática |
+| `<NetworkMesh>` | Malla de grafos decorativa (la usan portada y separadores). Se controla con `mesh` (ver abajo) | Primera forma, estática |
 | `<LogoRow>` | Fila de logos UNAL │ Facultad │ PLaS | Igual |
+
+**Figura de la malla (`mesh`):** en la portada y en los separadores, la malla puede dibujar algo relacionado con el tema. Elija la figura que **diga algo de la sección**; si ninguna aplica, no use `mesh`.
+
+```yaml
+mesh: embudo            # una figura: libro, lapiz, embudo, arbol, bombilla, lupa
+mesh: [arbol, libro]    # hasta 4: la malla deriva lentamente de una a otra
+mesh:                   # figura propia: 6–18 nodos, 6–28 aristas, todos unidos
+  nodes: [[0, 0], [50, 0], [100, 0], [0, 60], [50, 60], [100, 60]]
+  edges: [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5]]
+```
+
+La figura es la malla principal (trazo grueso); el tema la teje con una malla secundaria delgada sobre los mismos nodos, más unos pocos nodos de apoyo. Dibuje solo las aristas del dibujo. Dibuje con lo mínimo para que se reconozca. El validador rechaza figuras desconocidas o fuera de los límites.
 
 **Navegación automática:** la agenda, la miga de pan y el panel lateral de capítulos (se abre al llevar el mouse al borde izquierdo o con la tecla C, solo en la web) se generan a partir de los separadores (`layout: section`). Dé a cada separador un título corto y claro: es el nombre del capítulo en todos esos lugares.
 
