@@ -222,6 +222,19 @@ async function renderChecks() {
               }
             }
           }
+          const coverTitle = root.querySelector('.plas-cover__text h1')
+          if (coverTitle) {
+            const lh = Number.parseFloat(getComputedStyle(coverTitle).lineHeight)
+            const n = Math.round(coverTitle.getBoundingClientRect().height / lh)
+            if (n > 3)
+              out.push({ rule: 'titulo-portada-largo', level: 'aviso', msg: `El título de la portada ocupa ${n} líneas (máx. 3).` })
+          }
+          const place = root.querySelector('.plas-cover__place')
+          if (place) {
+            const lh = Number.parseFloat(getComputedStyle(place).lineHeight)
+            if (Math.round(place.getBoundingClientRect().height / lh) > 1)
+              out.push({ rule: 'lugar-largo', level: 'aviso', msg: 'El lugar de la portada ocupa más de una línea.' })
+          }
           const h1 = root.querySelector('.plas-content__head h1')
           if (h1) {
             const lh = Number.parseFloat(getComputedStyle(h1).lineHeight)
@@ -237,8 +250,10 @@ async function renderChecks() {
             'contenido-desborda': 'Reduzca el contenido o divídalo en dos diapositivas.',
             'titulo-multilinea': 'Acorte el título a una línea; mueva el detalle al subtítulo.',
             'sin-render': 'Revise que la maqueta exista y que el tema cargue.',
+            'titulo-portada-largo': 'Acorte el título; el detalle va en el subtítulo (## …).',
+            'lugar-largo': 'Acorte "place": omita lo que ya dicen los logos (universidad, facultad).',
           }[f.rule]
-          report('error', slide, f.rule, `[${mode}] ${f.msg}`, fix)
+          report(f.level ?? 'error', slide, f.rule, `[${mode}] ${f.msg}`, fix)
         }
       }
     }

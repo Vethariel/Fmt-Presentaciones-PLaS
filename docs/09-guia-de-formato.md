@@ -38,7 +38,7 @@ Todas las fuentes son libres y van dentro del tema: se ven igual en cualquier eq
 | Rol | Fuente | Tamaño | Peso |
 |---|---|---|---|
 | Título de diapositiva (`#`) | Onest | 34 px | 650 |
-| Título de portada | Onest | 44 px | 650 |
+| Título de portada | Onest | 52 px | 650 |
 | Título de separador | Onest | 40 px | 650 |
 | Subtítulo (`##`) | Onest | 19 px, a 10 px del título | 500, tono oscuro de la línea |
 | Cuerpo | Source Sans 3 | 20 px, interlineado 1,5 | 400 |
@@ -99,6 +99,8 @@ La agenda, la miga de pan y el panel se generan solos a partir de los separadore
 ![Portada](img/09-01-portada.png)
 
 **Cuándo:** solo en la primera diapositiva.
+
+**Jerarquía:** el título es el protagonista. Título, subtítulo y párrafo forman un bloque (componente `TitleBlock`) centrado verticalmente en la diapositiva; si el bloque crece, sube solo sin invadir la firma. Si el título pasa de 3 líneas, `plas-check` avisa. La firma (expositor, correo, lugar y fecha) baja hasta quedar sobre los logos, en tamaños menores: nombre a 16 px, correo a 14 px y lugar a 13 px en gris. El lugar debe caber en una línea: omita lo que ya dicen los logos (universidad, facultad). Si no cabe, `plas-check` avisa.
 
 **Estructura:**
 

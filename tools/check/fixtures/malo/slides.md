@@ -1,9 +1,10 @@
 ---
 theme: plas
 layout: cover
+place: Departamento de Ingeniería de Sistemas e Industrial · Facultad de Ingeniería · Universidad Nacional de Colombia · Sede Bogotá
 ---
 
-# Presentación de prueba con errores
+# Presentación de prueba con errores y un título de portada tan largo que ocupa más de tres líneas completas en la portada
 
 ---
 layout: section

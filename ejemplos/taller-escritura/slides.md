@@ -5,7 +5,7 @@ layout: cover
 mesh: [libro, lapiz]
 speaker: Felipe Restrepo Calle
 email: ferestrepoca@unal.edu.co
-place: Departamento de Ingeniería de Sistemas e Industrial · Facultad de Ingeniería · Sede Bogotá
+place: Departamento de Ingeniería de Sistemas e Industrial · Sede Bogotá
 themeConfig:
   event: Seminario PLaS · Taller de escritura
   webUrl: https://unplas.github.io/taller-escritura
