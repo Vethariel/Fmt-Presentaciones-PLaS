@@ -1,0 +1,15 @@
+{
+  "name": "plas-ejemplo-taller-escritura",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open=false",
+    "build": "slidev build --base /",
+    "check": "plas-check slides.md --render",
+    "export": "slidev export --executable-path /usr/bin/google-chrome --output export/taller-escritura.pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "53.1.0",
+    "slidev-theme-plas": "*"
+  }
+}
