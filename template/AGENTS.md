@@ -60,18 +60,44 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 
 **Nunca escriba colores a mano** (hex, `style="color…"`). El tema aplica el color de la línea a viñetas, énfasis, bordes y números. El texto en negrita (`**…**`) toma automáticamente el tono oscuro legible de la línea.
 
-## Catálogo de maquetas
+## Maquetas: estructura y biblioteca de tipologías
+
+### Estructura (el recorrido)
 
 | Maqueta | Úsela para | Contenido |
 |---|---|---|
 | `cover` | Portada (solo la primera diapositiva) | `# Título`, `## Subtítulo`, un párrafo corto opcional. Autor y datos van en el frontmatter |
 | `agenda` | Índice | Solo `# Agenda`. La lista se genera sola a partir de los separadores |
 | `section` | Inicio de cada sección | `# Nombre`. Frontmatter: `question` (pregunta que abre la sección), `mesh` (figuras) y, solo en modo secciones, `line` |
-| `default` | Contenido general | `# Título`, `## Subtítulo` opcional, texto y viñetas. Columna derecha opcional con `::aside::` |
-| `code` | Código como protagonista | `# Título`, `## Subtítulo`, bloque de código o animación de código |
-| `interactive` | Una herramienta o simulación | `# Título`, `## Subtítulo` y un único `<Interactive>` |
+| `closing` | Cierre (solo la última diapositiva) | `# Mensaje` corto («Gracias», una invitación), `## Subtítulo` opcional. El contacto, los logos, la malla de la portada y el QR (si hay `webUrl`) los pone el tema |
+
+### Biblioteca de tipologías de contenido
+
+**Regla: para cada diapositiva, elija la tipología que mejor muestra ese contenido**, no la primera que funcione. Pregúntese qué es el contenido: ¿una comparación?, ¿una imagen que explica?, ¿datos?, ¿una sola idea? La tabla le dice qué tipología corresponde.
+
+| El contenido es… | Tipología | Qué lleva |
+|---|---|---|
+| Una explicación con pocas ideas en lista | `default` | Texto y viñetas. Columna derecha opcional con `::aside::` (una ficha, una cifra) |
+| Dos cosas en paralelo o en comparación (antes/después, web/PDF, ventajas/límites) | `two-cols` | Columna izquierda, `::right::`, columna derecha. Cada una puede empezar con `### Encabezado` |
+| Una imagen que explica algo, más lo que hay que ver en ella | `image-text` | Frontmatter `image`, `credit`, `caption`, `side: left\|right`, `fit: cover\|contain`. Texto breve al otro lado |
+| Una imagen que es el contenido (un resultado, un esquema grande, una foto clave) | `image` | Frontmatter `image`, `credit`, `caption`. Una línea de comentario opcional |
+| Varios ejemplos visuales del mismo tipo (prototipos, casos, capturas) | `gallery` | Frontmatter `images: [{ src, caption, credit }]`, de 2 a 6. Una línea de comentario opcional |
+| Datos tabulados | `table` | Tabla Markdown y `::comment::` con lo que el público debe ver en ella |
+| Una sola idea que el público debe llevarse (una tesis, una conclusión, un objetivo) | `statement` | Primer párrafo: la idea (máx. ~25 palabras). Un párrafo de apoyo opcional |
+| Las palabras de otro (una definición, un testimonio, un fragmento de un artículo) | `quote` | La cita con `>` y frontmatter `cite: "Nombre, Obra, año"` |
+| Personas (equipo, autores, asesores) | `team` | Frontmatter `people: [{ name, role, photo, credit }]`, de 2 a 8. Sin foto: iniciales |
+| Código como protagonista | `code` | Bloque de código o animación de código, con su versión impresa |
+| Una herramienta o simulación | `interactive` | Un único `<Interactive>` |
 
 Cualquier otra maqueta es un error.
+
+**Variedad (la comprueba el validador):**
+
+- No ponga **más de 2 diapositivas seguidas** con la misma tipología dentro de una sección.
+- Ninguna tipología puede ocupar **más de la mitad** de las diapositivas de contenido.
+- Use al menos **3 tipologías** distintas en una presentación de 6 o más diapositivas de contenido.
+
+Si el validador le señala una repetición, no cambie la maqueta por cambiarla: busque cuál de esas diapositivas tiene un contenido que otra tipología muestra mejor (una lista de dos grupos es un `two-cols`; una conclusión es un `statement`; tres capturas son una `gallery`).
 
 ### Ejemplos mínimos
 
@@ -110,6 +136,100 @@ Un juez en línea califica el código, pero **no explica el error**.
 Calificación automática de ejercicios de programación.
 
 </ProjectCard>
+```
+
+**Dos columnas**
+
+```md
+---
+layout: two-cols
+---
+
+# Corrección manual y automática
+
+### Manual
+
+- Lenta y dependiente del cansancio
+- Comentarios ricos, pero tardíos
+
+::right::
+
+### Automática
+
+- Inmediata y consistente
+- Comentarios limitados si no se diseñan bien
+```
+
+**Imagen y texto**
+
+```md
+---
+layout: image-text
+image: /robot-aula.jpg
+credit: "María Gómez · CC BY 4.0 · Wikimedia Commons"
+caption: Robot educativo en una clase de quinto grado
+side: right
+---
+
+# Programar sin teclado
+
+Los estudiantes **arman el programa** con bloques físicos y el robot lo ejecuta.
+```
+
+**Galería**
+
+```md
+---
+layout: gallery
+images:
+  - { src: /prototipo-1.jpg, caption: Primer prototipo, credit: Propia }
+  - { src: /prototipo-2.jpg, caption: Segundo prototipo, credit: Propia }
+  - { src: /prototipo-3.png, caption: Versión final, credit: "Generada con IA (Gemini)" }
+---
+
+# Tres prototipos en un año
+```
+
+**Tabla con comentario**
+
+```md
+---
+layout: table
+---
+
+# Resultados del piloto
+
+| Curso | Entregas | Precisión |
+|---|---|---|
+| Programación I | 412 | 0,91 |
+| Programación II | 268 | 0,87 |
+
+::comment::
+
+La precisión **se mantiene** con ejercicios más largos.
+```
+
+**Idea clave y cita**
+
+```md
+---
+layout: statement
+---
+
+# La conclusión
+
+Una sola fuente produce **la web y el PDF**.
+
+Nada puede existir solo en la web.
+
+---
+layout: quote
+cite: Alan Kay, 1971
+---
+
+# Por qué inventar
+
+> La mejor forma de predecir el futuro es inventarlo.
 ```
 
 **Código animado (con su versión impresa)**
@@ -170,6 +290,26 @@ layout: interactive
 
 Los componentes propios de la presentación van en `components/`. Todo componente interactivo debe aceptar un modo estático (por ejemplo, `readonly`) para su versión impresa.
 
+## Imágenes
+
+**Use imágenes siempre que el contenido lo permita.** Una foto del prototipo, una captura del sistema, un esquema del método o un gráfico de resultados explican más que una lista. Si una diapositiva habla de algo que se puede ver, muéstrelo.
+
+**De dónde sacarlas, en este orden:**
+
+1. **Las que dé el usuario** (fotos, capturas, figuras de sus artículos). Pídalas si el tema las sugiere y no las tiene.
+2. **Propias:** esquemas, diagramas y gráficos que usted dibuje (SVG, un componente Vue en `components/`, un gráfico generado con código). Son la mejor opción para explicar un método o mostrar datos.
+3. **Generadas con IA**, si tiene esa capacidad: ilustraciones y escenas, no datos ni diagramas técnicos. Sin texto dentro de la imagen (sale deformado), sin personas reales identificables, sin logos. Use un estilo coherente en toda la presentación.
+4. **De internet, solo con licencia libre:** CC0, dominio público, CC BY o CC BY-SA, o las licencias de Unsplash, Pexels y Pixabay. Busque en Openverse (openverse.org), Wikimedia Commons, Unsplash o Pexels. **No use** imágenes con licencia NC (no comercial) o ND (sin derivadas), sin licencia clara, con marca de agua, ni de buscadores generales.
+
+**Cómo incluirlas:**
+
+- **Descargue** la imagen a `public/` con un nombre descriptivo (`robot-aula.jpg`) y cítela como `/robot-aula.jpg`. Nunca enlace a una URL externa.
+- Escriba **siempre** `credit`: `Propia`, `Generada con IA (herramienta)` o `Autor · Licencia · Fuente`. El tema lo muestra en pequeño bajo la imagen (salvo `Propia`), como exigen las licencias CC BY.
+- Resolución mínima: 1600 px de ancho para `image`, 1200 para `image-text`, 800 para cada imagen de una galería.
+- En una galería, prefiera imágenes de proporción parecida. El tema las iguala en altura por fila sin recortarlas, pero una panorámica junto a un retrato deja una de las dos diminuta.
+- `fit: contain` muestra la imagen entera (capturas, esquemas); `fit: cover` llena el marco recortando los bordes (fotos).
+- Diga en su informe final qué imágenes usó, de dónde salieron y con qué licencia.
+
 ## Componentes del tema
 
 | Componente | Uso | Versión impresa |
@@ -178,6 +318,7 @@ Los componentes propios de la presentación van en `components/`. Todo component
 | `<Frames :labels="[…]">` | Tira de fotogramas: versión impresa de una animación | — (ya es estática) |
 | `<Interactive>` | Contenedor de herramientas | Obligatorio `<template #print>`; el PDF añade un QR a la web |
 | `<ProjectCard>` | Proyecto: `title`, `kind`, `level`, `people`, `funding` | Igual |
+| `<Callout title="…" type="clave\|nota">` | Contenedor de color para una idea dentro de cualquier diapositiva (`clave`: color de la línea; `nota`: neutro) | Igual |
 | `<NetworkMesh>` | Malla de grafos de portada y separadores. Se controla con `mesh` (ver «Figuras de la malla») | Primera figura, estática |
 | `<LogoRow>` | Fila de logos UNAL │ Facultad │ PLaS | Igual |
 
@@ -230,11 +371,14 @@ El tema dibuja las aristas de la figura con trazo grueso y teje alrededor una ma
 | Niveles de anidación | máx. 2 |
 | Palabras por diapositiva | máx. recomendado 110 (aviso) |
 | Figuras de la malla | Portada y cada separador: 2 a 4 propias, con `label`; 6–18 nodos y 6–28 aristas cada una; sin copias (ni retocadas) de los ejemplos o de otras presentaciones del repositorio, sin repeticiones |
+| Tipologías | Máx. 2 seguidas iguales; ninguna en más de la mitad de las de contenido; al menos 3 distintas (con 6 o más de contenido) |
+| Imágenes | En `public/`, con `credit` y licencia libre; sin URL externas |
+| Cierre | Un solo `closing`, al final |
 | Desborde | Nada puede salirse de la diapositiva ni invadir el pie, ni en la web ni en el PDF |
 
 Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajuste márgenes.
 
-## Texto e imágenes
+## Texto
 
 - **Trato al público según la formalidad de la presentación**, y el mismo en todas las diapositivas:
   - **Usted** en presentaciones formales: sustentaciones, avances de tesis, presentaciones institucionales, charlas ante evaluadores, pares o entidades externas.
@@ -244,10 +388,9 @@ Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajus
 - Énfasis con `**negrita**`, y como máximo dos o tres por diapositiva. No resalte frases completas.
 - Citas con `>`: se muestran en Source Serif, en cursiva.
 - Ecuaciones con `$…$` y `$$…$$` (KaTeX).
+- Sin memes en presentaciones institucionales.
 - Tablas en Markdown (`| … |`): el tema les da estilo, sin colores a mano. Una tabla por diapositiva, con pocas columnas y filas cortas. Si no cabe, divídala o resúmala.
 - Cifras que aún no son definitivas (resultados preliminares, valores de ejemplo): dígalo en el subtítulo o junto a la cifra, p. ej. «Resultados preliminares, sin validar».
-- Imágenes propias o con licencia, de 1600 px de ancho como mínimo para ocupar media diapositiva. Indique la fuente si no es propia.
-- Sin memes ni imágenes de origen mezclado en presentaciones institucionales.
 
 ## Lo que no debe hacer
 
@@ -255,4 +398,6 @@ Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajus
 - Usar maquetas que no estén en el catálogo.
 - Poner contenido en `<WebOnly>` sin su `<PrintOnly>`.
 - Usar figuras genéricas que no digan nada del tema, o dar por bueno un dibujo sin mirarlo en `export/figuras.png`.
+- Encadenar diapositivas `default` cuando el contenido pide otra tipología.
+- Usar imágenes sin licencia clara, o enlazarlas desde internet en lugar de descargarlas.
 - Entregar una presentación sin pasar `npm run check`.

@@ -43,3 +43,9 @@ Texto breve con **un énfasis**.
 
 - Primera idea
 - Segunda idea
+
+---
+layout: closing
+---
+
+# Gracias

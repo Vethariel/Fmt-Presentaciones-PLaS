@@ -55,17 +55,14 @@ layout: default
 <Etapas />
 
 ---
-layout: default
+layout: statement
 ---
 
 # Objetivo del taller
 
-1. Apoyar a los integrantes del grupo en la **divulgación de los resultados** de sus proyectos
-2. Acompañar la construcción de productos académicos:
-   - Tesis de maestría y doctorado
-   - Trabajo final de maestría
-   - Artículo para conferencia o revista científica
-3. De forma indirecta, asesorar la formulación de proyectos a quienes están en la etapa de **planificación**
+Apoyar a los integrantes del grupo en la **divulgación de los resultados** de sus proyectos.
+
+Acompañamos tesis, trabajos finales y artículos, y de forma indirecta la formulación de proyectos en etapa de **planificación**.
 
 ---
 layout: default
@@ -78,31 +75,43 @@ layout: default
 <Ciclo />
 
 ---
-layout: default
+layout: two-cols
 ---
 
 # Recomendaciones
 
-1. Dedicar **un par de horas a la semana** a los compromisos del taller
-2. Usar herramientas de apoyo
-   - Referencias: Mendeley
-   - Edición: Overleaf (LaTeX)
-   - Coordinación: Slack, Trello, Google Docs, LucidChart
-3. Revisar la forma del trabajo individual: ortografía, gramática, erratas
-4. No descuidar otros compromisos: revisión de literatura, plan de trabajo, reuniones, asignaturas
+### Hábitos
+
+- Dedicar **un par de horas a la semana** a los compromisos del taller
+- Revisar la forma del trabajo individual: ortografía, gramática, erratas
+- No descuidar otros compromisos: revisión de literatura, plan de trabajo, reuniones, asignaturas
+
+::right::
+
+### Herramientas de apoyo
+
+- Referencias: Mendeley
+- Edición: Overleaf (LaTeX)
+- Coordinación: Slack, Trello, Google Docs, LucidChart
 
 ---
-layout: default
+layout: table
 ---
 
 # Resultados esperados
 
 ## Al final del semestre
 
-1. Documento de tesis o trabajo final con **avances significativos**
-2. Artículo preparado para someter a evaluación
-3. Seminario I: proyecto terminado hasta objetivos, con borrador de metodología
-4. Seminario II: proyecto terminado
+| Producto | Resultado |
+|---|---|
+| Tesis o trabajo final | Documento con **avances significativos** |
+| Artículo | Preparado para someter a evaluación |
+| Seminario I | Proyecto terminado hasta objetivos, con borrador de metodología |
+| Seminario II | Proyecto terminado |
+
+::comment::
+
+Cada integrante responde por el producto de **su etapa**.
 
 ---
 layout: section
@@ -137,12 +146,14 @@ Resumen · Abstract
 2. Marco conceptual y trabajos relacionados
 
 ---
-layout: default
+layout: two-cols
 ---
 
 # Tesis o trabajo final: capítulos
 
 ## Un capítulo por objetivo específico, cada uno con nombre propio
+
+### Estructura
 
 3. Capítulo del objetivo específico 1
 4. Capítulo del objetivo específico 2
@@ -150,30 +161,24 @@ layout: default
 6. Capítulo del objetivo específico 4
 7. Conclusiones y trabajos futuros
 
-Referencias
+::right::
 
----
-layout: default
----
+### Ejemplo
 
-# Tesis o trabajo final: ejemplo
-
-## Los capítulos 3 a 6 nombran lo que se hizo para cada objetivo
-
-Introducción, marco conceptual y conclusiones siguen la estructura general.
-
-3. Ambientes de aprendizaje **gamificado** para apoyar el aprendizaje de la programación
-4. Integración de un ambiente gamificado con un curso de programación
+3. Ambientes de aprendizaje **gamificado** para la programación
+4. Integración con un curso de programación
 5. Diseño experimental
 6. Análisis de resultados y discusión
 
 ---
-layout: default
+layout: two-cols
 ---
 
 # Artículo
 
 ## La introducción incluye estas partes como párrafos
+
+### Apertura
 
 Title · Abstract
 
@@ -184,7 +189,9 @@ Title · Abstract
    - Objetivos y estructura del artículo
 2. Related works
 
-::aside::
+::right::
+
+### Desarrollo
 
 3. Proposal *(con su nombre propio)*
 4. Data collection / Experimental setup
@@ -268,7 +275,8 @@ layout: default
 <Embudo :paso="0" compacto />
 
 ---
-layout: default
+layout: quote
+cite: Restrepo-Calle, Ramírez-Echeverry y González, «UNCode», EDULEARN 2018
 ---
 
 # Ejemplo de motivación (1/2)
@@ -277,10 +285,9 @@ layout: default
 
 > One of the most demanded skills nowadays for engineering students is computer programming. They should be able to [1]: analyze and understand how programs work; master a programming language; develop computer programs (design, implement, test and debug); among others. However, learning these skills is not an easy task. Students require not only to solve problems using the concepts learned in class [2], but also they require to study and practice out of class [3].
 
-Restrepo-Calle, Ramírez-Echeverry y González. *UNCode*. EDULEARN 2018. doi: 10.21125/edulearn.2018.1632
-
 ---
-layout: default
+layout: quote
+cite: Restrepo-Calle, Ramírez-Echeverry y González, «UNCode», EDULEARN 2018
 ---
 
 # Ejemplo de motivación (2/2)
@@ -289,31 +296,33 @@ layout: default
 
 > Moreover, it has been demonstrated that the continuous feedback by the teachers makes the student's extra-class practical work more effective [4]. Nevertheless, evaluating programming assignments manually in an objective manner and at an appropriate time is particularly difficult [5-6]. […] The grade assigned to an exercise is affected to a large extent by factors such as tiredness, favoritism, or inconsistencies of the person who evaluates [7].
 
-Restrepo-Calle, Ramírez-Echeverry y González. *UNCode*. EDULEARN 2018. doi: 10.21125/edulearn.2018.1632
-
 ---
-layout: default
+layout: two-cols
 ---
 
 # Preguntas que guían la motivación
 
 ## Respóndalas por separado y luego articúlelas en un texto
 
+### El problema
+
 - ¿Cuáles son las causas del problema?
 - ¿Cuáles son sus efectos?
 - ¿A quién afecta y dónde ocurre?
 - ¿Cómo se manifiesta y qué factores intervienen?
 
-::aside::
+::right::
 
 ### Su importancia
 
 - ¿Por qué es importante solucionarlo?
 - ¿Qué sucedería si no se atiende?
 
-### Todavía no
+<Callout title="Todavía no">
 
 Aún no plantee el objetivo: concéntrese en **motivar** la investigación.
+
+</Callout>
 
 ---
 layout: default
@@ -330,3 +339,11 @@ layout: default
 3. Definir la estructura
 4. Compartir el documento con los asesores
 5. Escribir la **motivación**
+
+---
+layout: closing
+---
+
+# Gracias
+
+## Taller de escritura · Grupo PLaS

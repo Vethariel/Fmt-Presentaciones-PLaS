@@ -6,7 +6,7 @@
     "dev": "slidev --open=false",
     "build": "slidev build --base /",
     "export": "plas-export slides.md export/plas-poc.pdf",
-    "check": "plas-check slides.md --render",
+    "check": "slidev build --base / && plas-check slides.md --render",
     "figuras": "plas-figuras slides.md"
   },
   "dependencies": {

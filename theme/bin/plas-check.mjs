@@ -20,9 +20,12 @@ import { parseSync } from '@slidev/parser'
 import { findBrowser } from '../utils/browser.mjs'
 import { FIGURE_LIMITS, figureErrors, similarFigures } from '../utils/figureRules.mjs'
 
-const LAYOUTS = ['cover', 'agenda', 'section', 'default', 'code', 'interactive']
+// Maquetas (docs/11). Estructurales: marcan el recorrido. De contenido: la biblioteca de tipologías.
+const STRUCTURE_LAYOUTS = ['cover', 'agenda', 'section', 'closing']
+const CONTENT_LAYOUTS = ['default', 'two-cols', 'image-text', 'image', 'gallery', 'table', 'statement', 'quote', 'team', 'code', 'interactive']
+const IMAGE_LAYOUTS = ['image-text', 'image', 'gallery']
+const LAYOUTS = [...STRUCTURE_LAYOUTS, ...CONTENT_LAYOUTS]
 const LINES = ['lenguajes', 'educacion', 'embebidos', 'transporte', 'sensado', 'plas'] // plas: color de la marca
-const CONTENT_LAYOUTS = ['default', 'code', 'interactive']
 // Figuras de referencia que no se pueden copiar ni retocar: los ejemplos de la guía
 // y las de las presentaciones del repositorio (poc, showcase, ejemplos/*).
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..')
@@ -46,7 +49,32 @@ function referenceFigures(self) {
   }
   return refs
 }
-const LIMITS = { title: 50, sectionTitle: 40, subtitle: 90, bullets: 6, depth: 2, words: 110 }
+const LIMITS = { title: 50, sectionTitle: 40, subtitle: 90, bullets: 6, depth: 2, words: 110, statementWords: 40, sameInARow: 2, dominantShare: 0.5, minKinds: 3, varietyFrom: 6 }
+
+// ───────────────────────── Imágenes (docs/11 §4) ─────────────────────────
+const FREE_LICENSE = /\b(cc0|cc[ -]by(?:[ -]sa)?(?: \d(?:\.\d)?)?|dominio p[úu]blico|public domain|unsplash|pexels|pixabay)\b/i
+const RESTRICTED = /\b(nc|nd)\b|no comercial|sin derivadas|all rights reserved|todos los derechos/i
+
+/** Dimensiones { w, h } de un PNG o JPEG (null si no se pueden leer). */
+function imageSize(f) {
+  try {
+    const b = fs.readFileSync(f)
+    if (b.length > 24 && b.readUInt32BE(0) === 0x89504E47)
+      return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) }
+    if (b[0] === 0xFF && b[1] === 0xD8) {
+      let i = 2
+      while (i + 9 < b.length) {
+        if (b[i] !== 0xFF) { i++; continue }
+        const m = b[i + 1]
+        if (m >= 0xC0 && m <= 0xCF && ![0xC4, 0xC8, 0xCC].includes(m))
+          return { w: b.readUInt16BE(i + 7), h: b.readUInt16BE(i + 5) }
+        i += 2 + b.readUInt16BE(i + 2)
+      }
+    }
+  }
+  catch {}
+  return null
+}
 
 const args = process.argv.slice(2)
 const file = args.find(a => !a.startsWith('--'))
@@ -90,6 +118,39 @@ if (deckLine !== undefined && !LINES.includes(deckLine))
   report('error', null, 'linea-invalida', `themeConfig.line = "${deckLine}" no es una línea válida.`, `Use una de: ${LINES.join(', ')}.`)
 
 const drawn = [] // figuras ya usadas en esta presentación: { fig, no }
+const publicDir = path.join(path.dirname(path.resolve(file)), 'public')
+const sequence = [] // { no, layout, line } de cada diapositiva, para las reglas de conjunto
+const componentsDir = path.join(path.dirname(path.resolve(file)), 'components')
+const OWN_COMPONENTS = fs.existsSync(componentsDir) ? fs.readdirSync(componentsDir).filter(f => f.endsWith('.vue')).map(f => f.slice(0, -4)) : []
+
+/** Comprueba una imagen del frontmatter: archivo local en public/, crédito y licencia. */
+function checkImage(slide, src, credit, where, minWidth) {
+  let size = null
+  if (typeof src !== 'string' || !src.trim()) {
+    report('error', slide, 'imagen-faltante', `Falta la ruta de la imagen${where}.`, 'Guarde la imagen en public/ y escriba su ruta: /nombre.jpg.')
+    return
+  }
+  if (/^https?:\/\//i.test(src))
+    report('error', slide, 'imagen-remota', `La imagen${where} se carga de internet (${src}).`, 'Descárguela a public/ y use /nombre.jpg: la presentación no debe depender de otro sitio. Anote su licencia en "credit".')
+  else if (!src.startsWith('/'))
+    report('error', slide, 'imagen-ruta', `La ruta "${src}"${where} no empieza por "/".`, 'Las imágenes van en public/ y se citan como /nombre.jpg.')
+  else if (!fs.existsSync(path.join(publicDir, src)))
+    report('error', slide, 'imagen-no-existe', `No existe public${src}${where}.`, 'Guarde la imagen en public/ con ese nombre.')
+  else {
+    size = imageSize(path.join(publicDir, src))
+    if (size && size.w < minWidth)
+      report('aviso', slide, 'imagen-pequena', `La imagen${where} mide ${size.w} px de ancho (mín. recomendado ${minWidth}).`, 'Use una versión más grande: en el proyector se verá borrosa.')
+  }
+  if (typeof credit !== 'string' || !credit.trim())
+    report('error', slide, 'imagen-sin-credito', `La imagen${where} no dice de dónde viene.`, 'Agregue credit: "Propia", "Generada con IA (herramienta)" o "Autor · Licencia · Fuente".')
+  else if (!/^(propia|generada)\b/i.test(credit.trim())) {
+    if (RESTRICTED.test(credit))
+      report('error', slide, 'licencia-restrictiva', `La licencia de la imagen${where} restringe su uso (${credit}).`, 'Busque otra con CC0, CC BY, CC BY-SA, dominio público, Unsplash o Pexels.')
+    else if (!FREE_LICENSE.test(credit))
+      report('error', slide, 'licencia-desconocida', `El crédito de la imagen${where} no indica una licencia libre (${credit}).`, 'Escriba "Autor · Licencia · Fuente" con CC0, CC BY, CC BY-SA, dominio público, Unsplash o Pexels; si no la conoce, no use la imagen.')
+  }
+  return size
+}
 deck.slides.forEach((s, i) => {
   const slide = { no: i + 1, line: (s.start ?? 0) + 1 }
   const fm = s.frontmatter ?? {}
@@ -148,6 +209,55 @@ deck.slides.forEach((s, i) => {
     report('aviso', slide, 'figura-sin-malla', `"mesh" no tiene efecto en la maqueta "${layout}".`, 'Use "mesh" solo en la portada o en un separador.')
   }
 
+  // Visual: maqueta de imagen, imagen suelta o un diagrama propio de components/
+  const visual = /!\[[^\]]*\]\(|<img\b/.test(text) || OWN_COMPONENTS.some(c => new RegExp(`<${c}\\b`).test(content))
+  sequence.push({ no: slide.no, line: slide.line, layout, visual })
+
+  // Reglas de cada tipología (docs/11 §2)
+  if (layout === 'image-text' || layout === 'image')
+    checkImage(slide, fm.image, fm.credit, '', layout === 'image' ? 1600 : 1200)
+  if (layout === 'gallery') {
+    const imgs = Array.isArray(fm.images) ? fm.images : []
+    if (imgs.length < 2 || imgs.length > 6)
+      report('error', slide, 'galeria-cantidad', `La galería tiene ${imgs.length} imágenes (entre 2 y 6).`, imgs.length < 2 ? 'Con una imagen use "image" o "image-text".' : 'Divida la galería en dos diapositivas.')
+    const ratios = imgs.map((im, k) => checkImage(slide, im?.src, im?.credit, ` ${k + 1}`, 800)).filter(Boolean).map(z => z.w / z.h)
+    // La galería iguala la altura por fila; con proporciones muy distintas, unas quedan diminutas
+    if (ratios.length > 1 && Math.max(...ratios) / Math.min(...ratios) > 3)
+      report('aviso', slide, 'galeria-desigual', `Las imágenes de la galería tienen proporciones muy distintas (de ${Math.min(...ratios).toFixed(2)} a ${Math.max(...ratios).toFixed(2)}).`, 'Recorte las extremas a una proporción parecida (p. ej. 4:3 o 16:9), o muestre la panorámica o el retrato aparte con "image".')
+  }
+  if (layout === 'two-cols' && !/^::right::\s*$/m.test(content))
+    report('error', slide, 'columna-faltante', 'La maqueta "two-cols" no tiene columna derecha.', 'Separe las dos columnas con una línea "::right::".')
+  if (layout === 'table' && !/^\s*\|.*\|\s*$/m.test(text))
+    report('error', slide, 'tabla-faltante', 'La maqueta "table" no tiene una tabla.', 'Escriba la tabla en Markdown (| … |) o use otra maqueta.')
+  if (layout === 'table' && !/^::comment::\s*$/m.test(content))
+    report('error', slide, 'tabla-sin-comentario', 'La tabla no tiene comentario.', 'Agregue "::comment::" con lo que el público debe ver en la tabla.')
+  if (layout === 'quote') {
+    if (!/^>\s/m.test(text))
+      report('error', slide, 'cita-faltante', 'La maqueta "quote" no tiene una cita (> …).', 'Escriba la cita con ">" o use otra maqueta.')
+    if (!fm.cite)
+      report('error', slide, 'cita-sin-fuente', 'La cita no dice de quién es.', 'Agregue cite: "Nombre, Obra, año".')
+  }
+  if (layout === 'statement') {
+    const w = text.replace(/^#.*$/gm, '').split(/\s+/).filter(x => /\p{L}/u.test(x)).length
+    if (w > LIMITS.statementWords)
+      report('aviso', slide, 'idea-larga', `La idea clave tiene ${w} palabras (máx. recomendado ${LIMITS.statementWords}).`, 'Una sola idea, corta. El desarrollo va en otra diapositiva.')
+  }
+  if (layout === 'team') {
+    const people = Array.isArray(fm.people) ? fm.people : []
+    if (people.length < 2 || people.length > 8)
+      report('error', slide, 'equipo-cantidad', `"people" tiene ${people.length} personas (entre 2 y 8).`, 'Para una persona use "image-text"; para más de 8, divida.')
+    people.forEach((m, k) => {
+      if (!m?.name)
+        report('error', slide, 'persona-sin-nombre', `La persona ${k + 1} no tiene "name".`, 'Agregue name.')
+      if (m?.photo)
+        checkImage(slide, m.photo, m.credit ?? 'Propia', ` (foto de ${m?.name ?? k + 1})`, 300)
+    })
+  }
+  if (layout === 'closing' && !h1)
+    report('error', slide, 'titulo-faltante', 'El cierre no tiene mensaje (# …).', 'Agregue un mensaje corto: «Gracias», «Preguntas», una invitación.')
+  if (/!\[[^\]]*\]\(|<img\b/.test(text) && !IMAGE_LAYOUTS.includes(layout))
+    report('aviso', slide, 'imagen-suelta', 'Hay una imagen fuera de las maquetas de imagen.', 'Use "image", "image-text" o "gallery": llevan pie y crédito.')
+
   if (CONTENT_LAYOUTS.includes(layout)) {
     if (!h1)
       report('error', slide, 'titulo-faltante', 'La diapositiva no tiene título (# …).', 'Agregue un título de una línea al inicio.')
@@ -159,10 +269,12 @@ deck.slides.forEach((s, i) => {
 
   // Viñetas
   const bullets = text.split('\n').filter(l => /^\s*([-*+]|\d+\.)\s+/.test(l))
-  const top = bullets.filter(l => /^([-*+]|\d+\.)\s+/.test(l)).length
+  // En two-cols cada columna es su propia lista: cuenta la columna más cargada
+  const topOf = t => t.split('\n').filter(l => /^([-*+]|\d+\.)\s+/.test(l)).length
+  const top = layout === 'two-cols' ? Math.max(...text.split(/^::right::\s*$/m).map(topOf)) : topOf(text)
   const depth = Math.max(0, ...bullets.map(l => Math.floor(l.match(/^\s*/)[0].length / 2) + 1))
   if (top > LIMITS.bullets)
-    report('error', slide, 'demasiadas-vinetas', `${top} viñetas de primer nivel (máx. ${LIMITS.bullets}).`, 'Divida el contenido en dos diapositivas o agrupe ideas.')
+    report('error', slide, 'demasiadas-vinetas', `${top} viñetas de primer nivel${layout === 'two-cols' ? ' en una columna' : ''} (máx. ${LIMITS.bullets}).`, 'Divida el contenido en dos diapositivas o agrupe ideas.')
   if (depth > LIMITS.depth)
     report('error', slide, 'anidacion-profunda', `Viñetas anidadas en ${depth} niveles (máx. ${LIMITS.depth}).`, 'Aplane la lista.')
 
@@ -198,11 +310,54 @@ deck.slides.forEach((s, i) => {
     report('error', slide, 'texto-justificado', 'Texto justificado.', 'Quite la justificación; el tema alinea a la izquierda.')
 })
 
+// ───────────────────────── Reglas de conjunto (docs/11 §3) ─────────────────────────
+{
+  const content = sequence.filter(x => CONTENT_LAYOUTS.includes(x.layout))
+  // Repetición: más de 2 seguidas de la misma tipología (un separador corta la racha)
+  let run = []
+  for (const x of sequence) {
+    if (!CONTENT_LAYOUTS.includes(x.layout)) {
+      if (x.layout === 'section')
+        run = []
+      continue
+    }
+    run = run.length && run[0].layout === x.layout ? [...run, x] : [x]
+    if (run.length === LIMITS.sameInARow + 1)
+      report('error', x, 'tipologia-repetida', `Tres diapositivas seguidas con la maqueta "${x.layout}" (diap. ${run.map(r => r.no).join(', ')}).`, 'Elija para alguna la tipología que mejor muestre su contenido: two-cols, image-text, table, statement, gallery… (AGENTS.md, «Biblioteca de tipologías»).')
+  }
+  if (content.length >= LIMITS.varietyFrom) {
+    const count = {}
+    for (const x of content) count[x.layout] = (count[x.layout] ?? 0) + 1
+    const [top, n] = Object.entries(count).sort((a, b) => b[1] - a[1])[0]
+    if (n / content.length > LIMITS.dominantShare)
+      report('error', null, 'tipologia-dominante', `"${top}" ocupa ${n} de ${content.length} diapositivas de contenido (máx. la mitad).`, 'Revise cuáles se muestran mejor con otra tipología.')
+    if (Object.keys(count).length < LIMITS.minKinds)
+      report('aviso', null, 'poca-variedad', `Solo ${Object.keys(count).length} tipologías en ${content.length} diapositivas de contenido.`, `Use al menos ${LIMITS.minKinds}, según lo que pida cada contenido.`)
+    if (!content.some(x => IMAGE_LAYOUTS.includes(x.layout) || x.layout === 'team' || x.visual))
+      report('aviso', null, 'sin-imagenes', 'La presentación no tiene imágenes.', 'Si el tema lo permite, muestre: fotos, capturas, diagramas o esquemas propios, imágenes generadas o de licencia libre (AGENTS.md, «Imágenes»).')
+  }
+  const closings = sequence.filter(x => x.layout === 'closing')
+  if (closings.length > 1)
+    report('error', closings[1], 'cierre-repetido', 'Hay más de un cierre.', 'Deje un solo "closing", al final.')
+  else if (closings.length === 1 && closings[0] !== sequence[sequence.length - 1])
+    report('error', closings[0], 'cierre-no-final', 'El cierre no es la última diapositiva.', 'Mueva "closing" al final.')
+  else if (!closings.length && sequence.length >= 8)
+    report('aviso', null, 'sin-cierre', 'La presentación no tiene cierre.', 'Termine con "layout: closing": mensaje, contacto y logos.')
+}
+
 // ───────────────────────── Reglas de renderizado ─────────────────────────
 async function renderChecks() {
   const dist = path.join(path.dirname(path.resolve(file)), 'dist')
   if (!fs.existsSync(path.join(dist, 'index.html'))) {
     report('error', null, 'sin-build', `No existe ${dist}/index.html.`, 'Ejecute "slidev build" antes de "plas check --render".')
+    return
+  }
+  // Una compilación vieja haría validar otra versión de la presentación
+  const src = path.dirname(path.resolve(file))
+  const newest = [file, ...(['components', 'public'].flatMap(d => fs.existsSync(path.join(src, d)) ? fs.readdirSync(path.join(src, d)).map(f => path.join(src, d, f)) : []))]
+    .reduce((m, f) => Math.max(m, fs.statSync(f).mtimeMs), 0)
+  if (fs.statSync(path.join(dist, 'index.html')).mtimeMs < newest) {
+    report('error', null, 'build-viejo', `${dist} es anterior a los cambios de la presentación.`, 'Compile antes de validar: "npm run check" ya lo hace (slidev build && plas-check).')
     return
   }
   const { chromium } = await import('playwright-chromium')

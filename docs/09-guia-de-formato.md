@@ -435,3 +435,5 @@ Maquetas del catálogo (documento 03, §6) que aún no existen; por ahora, use `
 | `math` | Desarrollo de ecuaciones paso a paso |
 | `diagram` | Diagrama o flujo con la paleta de las líneas |
 | `cover-brand` | Portada de marca para cursos y presentaciones largas |
+
+> **Actualización (2026-11-25):** la biblioteca de tipologías de contenido (`two-cols`, `image-text`, `image`, `gallery`, `table`, `statement`, `quote`, `team`), el cierre (`closing`) y las reglas de variedad e imágenes están en [11-tipologias-de-diapositiva.md](11-tipologias-de-diapositiva.md). `showcase/` muestra cada una.

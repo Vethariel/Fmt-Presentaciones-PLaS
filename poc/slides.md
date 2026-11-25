@@ -211,3 +211,11 @@ mesh:
 ---
 
 # Sensado inteligente
+
+---
+layout: closing
+---
+
+# Construyamos juntos
+
+## plas_fibog@unal.edu.co

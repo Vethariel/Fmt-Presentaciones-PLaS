@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "slidev --open=false",
     "build": "slidev build --base /",
-    "check": "plas-check slides.md --render",
+    "check": "slidev build --base / && plas-check slides.md --render",
     "figuras": "plas-figuras slides.md",
     "export": "plas-export slides.md export/plas-showcase.pdf"
   },

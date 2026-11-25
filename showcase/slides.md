@@ -60,26 +60,78 @@ Una idea por diapositiva, con **un énfasis** que guía la lectura.
 - El color de la viñeta lo da la línea de la sección
 
 ---
-layout: default
+layout: two-cols
 ---
 
-# Contenido con columna lateral
+# Dos columnas
 
-## El slot `::aside::` agrega una columna de 300 px
+## `two-cols`: comparar o poner en paralelo
 
-El texto principal ocupa la columna izquierda. La columna derecha sirve para datos de apoyo: un proyecto, una cifra o una imagen.
+### En la web
 
-- Fichas de proyecto
-- Datos clave
-- Imágenes pequeñas
+- Animaciones y código que se transforma
+- Herramientas interactivas
+- Panel de capítulos
 
-::aside::
+::right::
 
-<ProjectCard title="UNCode" level="Maestría y doctorado" people="Grupo PLaS" funding="Universidad Nacional de Colombia">
+### En el PDF
 
-Aprendizaje y calificación automática de ejercicios de programación.
+- El estado final de cada animación
+- Fotogramas clave del código
+- Una instantánea con QR a la web
 
-</ProjectCard>
+---
+layout: image-text
+image: /panel-capitulos.png
+credit: Propia
+caption: Panel de capítulos abierto en la diapositiva 5
+side: left
+fit: contain
+---
+
+# Imagen y texto
+
+## `image-text`: la imagen explica, el texto guía
+
+Una captura, una foto o un esquema a un lado, y al otro lo que el público debe ver en ella.
+
+- `side: left` o `side: right`
+- El crédito va en `credit`
+
+---
+layout: image
+image: /web-y-pdf.png
+credit: Propia
+caption: La misma diapositiva en la web (izquierda) y en el PDF (derecha)
+---
+
+# Imagen protagonista
+
+## `image`: cuando la imagen es el contenido
+
+---
+layout: gallery
+images:
+  - src: /portada.png
+    caption: Portada (16:9)
+    credit: Propia
+  - src: /logo-svg-vs-png.png
+    caption: Logo en SVG y en PNG (casi cuadrada)
+    credit: Propia
+  - src: /poc-web.png
+    caption: Versión web completa (vertical)
+    credit: Propia
+  - src: /separador.png
+    caption: Separador (16:9)
+    credit: Propia
+---
+
+# Galería
+
+## `gallery`: de 2 a 6 imágenes, sin recortes aunque tengan otra proporción
+
+Cada fila tiene una sola altura; cada imagen toma el ancho que le da su proporción.
 
 ---
 layout: code
@@ -124,7 +176,7 @@ layout: default
 
 ## Negrita para resaltar, listas para ordenar
 
-El énfasis con **negrita** toma el tono oscuro de la línea. Use **dos o tres** por diapositiva.
+El énfasis con **negrita** toma el tono oscuro de la línea. El código en línea, como `suma_pares(xs)`, lleva fondo suave.
 
 1. Listas numeradas para pasos o secuencias
 2. Viñetas para ideas sin orden
@@ -132,33 +184,68 @@ El énfasis con **negrita** toma el tono oscuro de la línea. Use **dos o tres**
    - Más pequeño y con marca neutra
 
 ---
-layout: default
+layout: table
 ---
 
-# Citas y código en línea
+# Tabla con comentario
 
-## Source Serif para las citas, JetBrains Mono para el código
-
-> La mejor forma de predecir el futuro es inventarlo.
->
-> — Alan Kay
-
-El código dentro del texto, como `suma_pares(xs)` o `git commit`, lleva fondo suave y tono oscuro.
-
----
-layout: default
----
-
-# Tablas
-
-## Encabezado con línea de color y filas separadas
+## `table`: los datos y lo que hay que ver en ellos
 
 | Maqueta | Uso | Versión impresa |
 |---|---|---|
 | `cover` | Portada | Igual a la web |
-| `section` | Separador de capítulo | Malla de grafos estática |
+| `section` | Separador de capítulo | Malla estática |
 | `code` | Código protagonista | Fotogramas clave |
 | `interactive` | Herramienta | Instantánea con QR |
+
+::comment::
+
+Solo las animaciones y las herramientas cambian en el PDF: **todo lo demás es igual** en los dos formatos.
+
+---
+layout: quote
+cite: Alan Kay, 1971
+---
+
+# Cita destacada
+
+> La mejor forma de predecir el futuro es inventarlo.
+
+---
+layout: statement
+---
+
+# Idea clave
+
+## `statement`: una sola idea, en un contenedor de color
+
+La web es **el PDF que además se mueve**.
+
+Nada puede existir solo en la web.
+
+---
+layout: default
+---
+
+# Contenedor de énfasis
+
+## `<Callout>` dentro de cualquier diapositiva
+
+El texto principal ocupa la columna izquierda. La columna derecha (`::aside::`) sirve para datos de apoyo.
+
+<Callout title="Clave">
+
+Una idea que el público debe llevarse, sin ocupar toda la diapositiva.
+
+</Callout>
+
+::aside::
+
+<ProjectCard title="UNCode" level="Maestría y doctorado" people="Grupo PLaS" funding="Universidad Nacional de Colombia">
+
+Aprendizaje y calificación automática de ejercicios de programación.
+
+</ProjectCard>
 
 ---
 layout: default
@@ -173,3 +260,30 @@ La velocidad terminal del paracaidista es $v_t = \frac{gm}{c}$, y la actualizaci
 $$
 y_{i+1} = y_i + f(x_i, y_i)\,h
 $$
+
+---
+layout: team
+people:
+  - name: Nombre Apellido
+    role: Profesora · Lenguajes
+  - name: Nombre Apellido
+    role: Profesor · Embebidos
+  - name: Nombre Apellido
+    role: Doctorando · Educación
+  - name: Nombre Apellido
+    role: Maestría · Sensado
+---
+
+# Equipo
+
+## `team`: personas, con foto o con iniciales
+
+---
+layout: closing
+---
+
+# Gracias
+
+## Cierre: mensaje, contacto y logos
+
+La malla repite la de la portada.

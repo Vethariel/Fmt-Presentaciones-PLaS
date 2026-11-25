@@ -76,7 +76,7 @@ layout: default
 <p style="color: #ff0000; text-align: justify">Texto rojo justificado.</p>
 
 ---
-layout: two-cols
+layout: three-cols
 ---
 
 # Maqueta que no existe
@@ -100,3 +100,53 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae lectus a 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae lectus a magna pulvinar. Sed posuere, nisl at porta luctus, mauris erat tincidunt ante.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae lectus a magna pulvinar. Sed posuere, nisl at porta luctus, mauris erat tincidunt ante.
+
+---
+layout: gallery
+images:
+  - src: /pano.png
+    credit: Propia
+  - src: /vertical.png
+    credit: Juan Pérez · CC BY-NC 4.0 · Wikimedia Commons
+  - src: https://example.org/x.jpg
+    credit: Flickr
+  - src: /no-existe.png
+---
+
+# Galería con imágenes problemáticas
+
+---
+layout: two-cols
+---
+
+# Dos columnas sin columna derecha
+
+- Solo una
+
+---
+layout: table
+---
+
+# Tabla sin tabla ni comentario
+
+Texto.
+
+---
+layout: quote
+---
+
+# Cita sin cita ni fuente
+
+Texto.
+
+---
+layout: closing
+---
+
+# Cierre que no es el último
+
+---
+layout: default
+---
+
+# Después del cierre
