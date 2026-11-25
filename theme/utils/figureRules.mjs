@@ -48,3 +48,36 @@ export function figureKey(fig) {
   const id = pts.map(([x, y]) => `${Math.round((x - x0) / span * 50)},${Math.round((y - y0) / span * 50)}`)
   return fig.edges.map(([i, j]) => [id[i], id[j]].sort().join('-')).sort().join(' ')
 }
+
+/** Nodos girados y normalizados a la caja de la figura (lado mayor = 1). */
+function normalized(fig) {
+  const a = ((fig.angle ?? 0) * Math.PI) / 180
+  const pts = fig.nodes.map(([x, y]) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)])
+  const xs = pts.map(p => p[0])
+  const ys = pts.map(p => p[1])
+  const x0 = Math.min(...xs)
+  const y0 = Math.min(...ys)
+  const span = Math.max(Math.max(...xs) - x0, Math.max(...ys) - y0, 1e-6)
+  return pts.map(([x, y]) => [(x - x0) / span, (y - y0) / span])
+}
+
+/**
+ * ¿Es `b` una variante de `a`? Misma figura (huella) o mismos trazos —igual
+ * número de nodos y la misma lista de aristas— con los nodos casi en el mismo
+ * sitio (distancia media < 12 % del lado mayor). Atrapa copias retocadas.
+ */
+export function similarFigures(a, b) {
+  if (figureErrors(a).length || figureErrors(b).length)
+    return false
+  if (figureKey(a) === figureKey(b))
+    return true
+  if (a.nodes.length !== b.nodes.length || a.edges.length !== b.edges.length)
+    return false
+  const ek = f => f.edges.map(([i, j]) => (i < j ? `${i}-${j}` : `${j}-${i}`)).sort().join(' ')
+  if (ek(a) !== ek(b))
+    return false
+  const pa = normalized(a)
+  const pb = normalized(b)
+  const mean = pa.reduce((s, p, i) => s + Math.hypot(p[0] - pb[i][0], p[1] - pb[i][1]), 0) / pa.length
+  return mean < 0.12
+}

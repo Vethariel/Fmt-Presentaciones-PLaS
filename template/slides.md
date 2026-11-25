@@ -8,7 +8,7 @@ place: Universidad Nacional de Colombia · Sede Bogotá
 date: Mes Año
 themeConfig:
   event: Grupo PLaS
-  webUrl: https://unplas.github.io/nombre-del-repositorio
+  # webUrl: https://unplas.github.io/<repositorio>   # solo si ya se sabe dónde se publicará la web
 # mesh: 2–4 figuras propias de la presentación (AGENTS.md, «Figuras de la malla»)
 ---
 

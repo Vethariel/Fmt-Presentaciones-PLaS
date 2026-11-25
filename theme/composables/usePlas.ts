@@ -8,10 +8,13 @@ export const LINES = {
   embebidos: { name: 'Sistemas embebidos confiables', short: 'Embebidos' },
   transporte: { name: 'Sistemas inteligentes de transporte', short: 'Transporte' },
   sensado: { name: 'Sensado inteligente', short: 'Sensado' },
+  /** No es una línea: color de la marca, para secciones del grupo (cómo unirse, cierre…). */
+  plas: { name: 'Grupo PLaS', short: 'PLaS' },
 } as const
 
 export type LineId = keyof typeof LINES
-export const LINE_ORDER = Object.keys(LINES) as LineId[]
+/** Ciclo de respaldo para separadores sin `line`: solo líneas de investigación. */
+export const LINE_ORDER = (Object.keys(LINES) as LineId[]).filter(l => l !== 'plas')
 
 export function isLine(v: unknown): v is LineId {
   return typeof v === 'string' && v in LINES

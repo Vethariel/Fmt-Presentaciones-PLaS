@@ -111,7 +111,9 @@ Las coordenadas van en cualquier unidad, con `y` hacia abajo. El tema las normal
 | Nodos por figura | 6 a 18 |
 | Aristas por figura | 6 a 28, sin repetir |
 | Nodos sueltos | Ninguno: todo nodo tiene al menos una arista |
-| Copias | Ninguna figura puede ser un ejemplo de `figureExamples.json` ni repetirse en la presentación. Se comparan sin importar la escala, la posición ni el orden de los nodos |
+| Copias | Ninguna figura puede copiar un ejemplo de `figureExamples.json` ni una figura de `poc/`, `showcase/` o `ejemplos/*`, ni repetirse en la presentación |
+
+Dos figuras se consideran la misma si (a) coinciden sin importar la escala, la posición ni el orden de los nodos, o (b) tienen el mismo número de nodos, la misma lista de aristas y los nodos casi en el mismo sitio (distancia media menor que el 12 % del lado mayor). El caso (b) atrapa copias retocadas: en la segunda prueba con un agente (2026-11-25), este copió la hoja del taller de escritura moviendo un poco las coordenadas. Una versión nueva del mismo objeto, dibujada con otros nodos y otras aristas, no se rechaza; para eso la guía pide no reutilizar ideas de otras presentaciones.
 
 Fuente única: `theme/utils/figureRules.mjs` (la usan el tema, el validador y la vista previa). El mínimo de nodos evita dibujos que no se reconocen ni parecen una red; el máximo impide rellenar el panel. Lo que el validador no puede comprobar, que la figura diga algo del tema, lo pide `template/AGENTS.md`, y `label` lo deja por escrito.
 

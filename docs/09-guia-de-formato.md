@@ -172,7 +172,7 @@ question: ¿Cómo se escribe el contenido dentro de una diapositiva?
 
 **Reglas:**
 
-- `line` es obligatorio en modo secciones; los valores válidos son `lenguajes`, `educacion`, `embebidos`, `transporte` y `sensado`.
+- `line` es obligatorio en modo secciones; los valores válidos son `lenguajes`, `educacion`, `embebidos`, `transporte` y `sensado`, más `plas` (colores de la marca) para secciones que no son de ninguna línea, como «Cómo unirse» o el cierre.
 - Título de 40 caracteres como máximo. El detalle va en `question`.
 - La pregunta abre el capítulo; las de cada línea están en `web_plas/src/data/lines.json`.
 

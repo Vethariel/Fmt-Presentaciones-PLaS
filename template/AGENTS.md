@@ -24,7 +24,7 @@ npm run check     # compila y valida: reglas estáticas + renderizado web y PDF
 npm run export    # PDF en export/
 ```
 
-Una diapositiva **no está terminada** hasta que `npm run check` termina sin errores. Si el validador informa un error, aplique la corrección que indica (`→ …`) y vuelva a ejecutarlo. No desactive reglas.
+Una diapositiva **no está terminada** hasta que `npm run check` termina sin errores. Al final, ejecute `npm run export` y **mire cada página del PDF**: el validador mide desbordes, pero no ve si algo se lee mal o se ve raro. Si el validador informa un error, aplique la corrección que indica (`→ …`) y vuelva a ejecutarlo. No desactive reglas.
 
 ## Encabezado (primer bloque de frontmatter)
 
@@ -38,18 +38,25 @@ email: correo@unal.edu.co
 place: Universidad Nacional de Colombia · Sede Bogotá
 date: Noviembre 2026
 themeConfig:
-  event: Seminario PLaS · Taller de escritura   # texto del pie
-  webUrl: https://unplas.github.io/<repositorio> # para los QR del PDF
+  event: Seminario PLaS · Taller de escritura   # texto del pie: dónde o para qué se presenta
+  webUrl: https://unplas.github.io/<repositorio> # SOLO si ya se sabe dónde se publicará la web
   # line: educacion   # SOLO si toda la presentación es de una línea (modo línea)
 ---
 ```
+
+- **`event`**: el contexto de la charla, corto: «Avance de tesis · Maestría en Ingeniería de Sistemas», «Seminario PLaS». Si el usuario no lo da, dedúzcalo del pedido y dígale qué puso.
+- **`webUrl`**: la dirección donde se publicará la versión web; con ella el PDF muestra un QR junto a cada `<Interactive>`. Si el usuario no la da, **omítala**: sin ella no hay QR, y una URL inventada lleva a una página que no existe.
 
 ## Color: modo línea o modo secciones
 
 - **Modo línea:** `themeConfig.line` fija el color de toda la presentación. Úselo para sustentaciones, avances y charlas de una sola línea.
 - **Modo secciones:** sin `themeConfig.line`, cada separador (`layout: section`) define su `line` y las diapositivas siguientes heredan ese color.
 
+En modo línea, los separadores **no** llevan `line` (se ignoraría). En modo secciones, es obligatorio en cada separador.
+
 Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`.
+
+`plas` no es una línea: usa los colores de la marca del grupo. Úsela en las secciones que no pertenecen a ninguna línea (el grupo, cómo unirse, cierre). No la use para evitar elegir la línea de una sección que sí tiene una.
 
 **Nunca escriba colores a mano** (hex, `style="color…"`). El tema aplica el color de la línea a viñetas, énfasis, bordes y números. El texto en negrita (`**…**`) toma automáticamente el tono oscuro legible de la línea.
 
@@ -59,7 +66,7 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 |---|---|---|
 | `cover` | Portada (solo la primera diapositiva) | `# Título`, `## Subtítulo`, un párrafo corto opcional. Autor y datos van en el frontmatter |
 | `agenda` | Índice | Solo `# Agenda`. La lista se genera sola a partir de los separadores |
-| `section` | Inicio de cada sección | `# Nombre`. Frontmatter: `line` y `question` (pregunta que abre la sección) |
+| `section` | Inicio de cada sección | `# Nombre`. Frontmatter: `question` (pregunta que abre la sección), `mesh` (figuras) y, solo en modo secciones, `line` |
 | `default` | Contenido general | `# Título`, `## Subtítulo` opcional, texto y viñetas. Columna derecha opcional con `::aside::` |
 | `code` | Código como protagonista | `# Título`, `## Subtítulo`, bloque de código o animación de código |
 | `interactive` | Una herramienta o simulación | `# Título`, `## Subtítulo` y un único `<Interactive>` |
@@ -183,14 +190,16 @@ La portada y **cada** separador dibujan con su malla de grafos **de 2 a 4 figura
 - En la **portada**: de la presentación entera (su objeto, su campo, su resultado).
 - En un **separador**: de esa sección. Lea su título y su `question` y dibuje objetos concretos que respondan a ellos.
 - Prefiera **objetos reconocibles** (un instrumento, un documento, una señal, una herramienta) a ideas abstractas. Las figuras de una misma diapositiva deben ser distintas entre sí y mirar el tema desde ángulos diferentes.
+- **No reutilice dibujos ni ideas de otras presentaciones** del repositorio (`poc/`, `showcase/`, `ejemplos/`). Si su tema no es el de ellas, sus figuras tampoco le sirven. El validador rechaza las copias, aunque estén retocadas.
 
 **Cómo dibujar.**
 
-1. Imagine el objeto en una cuadrícula de unos 100 × 100, con `y` hacia **abajo**.
+1. Imagine el objeto en una cuadrícula de unos 100 × 100, con `y` hacia **abajo**. El tema conserva la proporción del dibujo: lo agranda hasta llenar el panel de la malla sin deformarlo, igual que `figuras.png`.
 2. Ponga un nodo en cada esquina o punto de giro: 6 a 18 nodos. Un tercer valor, `[x, y, 1]`, agranda el nodo (sirve como punto o acento).
 3. Una con aristas solo los trazos del dibujo: 6 a 28. Un trazo curvo se aproxima con 3 a 5 nodos. Todo nodo necesita al menos una arista.
 4. Escriba en `label` qué es y qué tiene que ver con el tema.
-5. Ejecute `npm run figuras` y **mire `export/figuras.png`**. Si un dibujo no se reconoce a primera vista, corríjalo o cámbielo por otro.
+5. Ejecute `npm run figuras` y **mire `export/figuras.png`**. Para cada dibujo, tape mentalmente su `label` y diga qué objeto ve. Si no lo puede nombrar a la primera, o nombra otro objeto, el dibujo no sirve: rehágalo o cámbielo por un objeto más fácil de dibujar. No dé por bueno un dibujo solo porque el validador lo acepta: el validador comprueba la forma, no si se reconoce.
+6. En su informe final, diga qué objeto dibujó en cada figura y si tuvo que rehacer alguna.
 
 ```yaml
 mesh:
@@ -217,20 +226,26 @@ El tema dibuja las aristas de la figura con trazo grueso y teje alrededor una ma
 | Título (`#`) en maquetas de contenido | 1 línea, máx. 50 caracteres |
 | Título de sección | máx. 40 caracteres; el detalle va en `question` |
 | Subtítulo (`##`) | 1 línea, máx. 90 caracteres |
-| Viñetas de primer nivel | máx. 6 |
+| Viñetas de primer nivel | máx. 6 por diapositiva, **sumando la columna principal y `::aside::`** |
 | Niveles de anidación | máx. 2 |
 | Palabras por diapositiva | máx. recomendado 110 (aviso) |
-| Figuras de la malla | Portada y cada separador: 2 a 4 propias, con `label`; 6–18 nodos y 6–28 aristas cada una; sin copias ni repeticiones |
+| Figuras de la malla | Portada y cada separador: 2 a 4 propias, con `label`; 6–18 nodos y 6–28 aristas cada una; sin copias (ni retocadas) de los ejemplos o de otras presentaciones del repositorio, sin repeticiones |
 | Desborde | Nada puede salirse de la diapositiva ni invadir el pie, ni en la web ni en el PDF |
 
 Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajuste márgenes.
 
 ## Texto e imágenes
 
+- **Trato al público según la formalidad de la presentación**, y el mismo en todas las diapositivas:
+  - **Usted** en presentaciones formales: sustentaciones, avances de tesis, presentaciones institucionales, charlas ante evaluadores, pares o entidades externas.
+  - **Tú** en presentaciones cercanas: invitaciones a estudiantes, semilleros, talleres, clases.
+  - Si el pedido no deja claro el tono, elija según el público y dígale al usuario cuál usó.
 - Alineación a la izquierda; nunca justificado.
 - Énfasis con `**negrita**`, y como máximo dos o tres por diapositiva. No resalte frases completas.
 - Citas con `>`: se muestran en Source Serif, en cursiva.
 - Ecuaciones con `$…$` y `$$…$$` (KaTeX).
+- Tablas en Markdown (`| … |`): el tema les da estilo, sin colores a mano. Una tabla por diapositiva, con pocas columnas y filas cortas. Si no cabe, divídala o resúmala.
+- Cifras que aún no son definitivas (resultados preliminares, valores de ejemplo): dígalo en el subtítulo o junto a la cifra, p. ej. «Resultados preliminares, sin validar».
 - Imágenes propias o con licencia, de 1600 px de ancho como mínimo para ocupar media diapositiva. Indique la fuente si no es propia.
 - Sin memes ni imágenes de origen mezclado en presentaciones institucionales.
 

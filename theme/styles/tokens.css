@@ -78,6 +78,14 @@
   --deep: #583169;
 }
 
+/* Marca: secciones que no son de una línea (cómo unirse, cierre, el grupo). */
+.plas[data-line='plas'] {
+  --base: var(--plas-mint);
+  --soft: var(--plas-soft);
+  --dark: var(--plas-dark);
+  --deep: var(--plas-deep);
+}
+
 /* Comparación de fuentes monoespaciadas (pendiente de decisión, docs/05 §6) */
 .plas[data-mono='source-code-pro'] {
   --font-code: 'Source Code Pro Variable', ui-monospace, monospace;

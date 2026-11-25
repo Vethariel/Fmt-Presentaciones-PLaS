@@ -18,14 +18,34 @@ import path from 'node:path'
 import process from 'node:process'
 import { parseSync } from '@slidev/parser'
 import { findBrowser } from '../utils/browser.mjs'
-import { FIGURE_LIMITS, figureErrors, figureKey } from '../utils/figureRules.mjs'
+import { FIGURE_LIMITS, figureErrors, similarFigures } from '../utils/figureRules.mjs'
 
 const LAYOUTS = ['cover', 'agenda', 'section', 'default', 'code', 'interactive']
-const LINES = ['lenguajes', 'educacion', 'embebidos', 'transporte', 'sensado']
+const LINES = ['lenguajes', 'educacion', 'embebidos', 'transporte', 'sensado', 'plas'] // plas: color de la marca
 const CONTENT_LAYOUTS = ['default', 'code', 'interactive']
-// Ejemplos de la documentación: sirven para enseñar, no para copiarlos.
-const EXAMPLES = JSON.parse(fs.readFileSync(new URL('../utils/figureExamples.json', import.meta.url), 'utf8'))
-const EXAMPLE_KEYS = new Map(Object.entries(EXAMPLES).map(([name, f]) => [figureKey(f), name]))
+// Figuras de referencia que no se pueden copiar ni retocar: los ejemplos de la guía
+// y las de las presentaciones del repositorio (poc, showcase, ejemplos/*).
+const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..')
+function referenceFigures(self) {
+  const refs = Object.entries(JSON.parse(fs.readFileSync(new URL('../utils/figureExamples.json', import.meta.url), 'utf8')))
+    .map(([name, fig]) => ({ fig, from: `del ejemplo "${name}" de la guía` }))
+  const decks = ['poc', 'showcase', ...(fs.existsSync(path.join(REPO, 'ejemplos')) ? fs.readdirSync(path.join(REPO, 'ejemplos')).map(d => `ejemplos/${d}`) : [])]
+  for (const d of decks) {
+    const f = path.join(REPO, d, 'slides.md')
+    if (!fs.existsSync(f) || path.resolve(f) === self)
+      continue
+    try {
+      parseSync(fs.readFileSync(f, 'utf8'), f).slides.forEach((sl, i) => {
+        const mesh = sl.frontmatter?.mesh
+        for (const fig of Array.isArray(mesh) ? mesh : [])
+          if (fig && typeof fig === 'object')
+            refs.push({ fig, from: `de «${fig.label ?? 'sin label'}» en ${d}/slides.md (diap. ${i + 1})` })
+      })
+    }
+    catch {}
+  }
+  return refs
+}
 const LIMITS = { title: 50, sectionTitle: 40, subtitle: 90, bullets: 6, depth: 2, words: 110 }
 
 const args = process.argv.slice(2)
@@ -35,6 +55,8 @@ if (!file) {
   console.error('Uso: plas-check <slides.md> [--render] [--json]')
   process.exit(2)
 }
+
+const REFERENCES = referenceFigures(path.resolve(file))
 
 const issues = []
 function report(level, slide, rule, message, fix) {
@@ -67,7 +89,7 @@ if (head.theme !== 'plas')
 if (deckLine !== undefined && !LINES.includes(deckLine))
   report('error', null, 'linea-invalida', `themeConfig.line = "${deckLine}" no es una línea válida.`, `Use una de: ${LINES.join(', ')}.`)
 
-const drawn = new Map() // huella de cada figura → diapositiva donde se usó
+const drawn = [] // figuras ya usadas en esta presentación: { fig, no }
 deck.slides.forEach((s, i) => {
   const slide = { no: i + 1, line: (s.start ?? 0) + 1 }
   const fm = s.frontmatter ?? {}
@@ -111,13 +133,14 @@ deck.slides.forEach((s, i) => {
           report('error', slide, 'figura-invalida', `${e}${where}`, `Dibuje con lo mínimo: ${FIGURE_LIMITS.minNodes}–${FIGURE_LIMITS.maxNodes} nodos [x, y], ${FIGURE_LIMITS.minEdges}–${FIGURE_LIMITS.maxEdges} aristas [i, j], todos los nodos unidos.`)
         if (errs.length)
           return
-        const key = figureKey(m)
-        if (EXAMPLE_KEYS.has(key))
-          report('error', slide, 'figura-copiada', `La figura${where} es el ejemplo "${EXAMPLE_KEYS.get(key)}" de la guía.`, `Los ejemplos muestran la técnica; dibuje una figura propia de ${what}.`)
-        else if (drawn.has(key))
-          report('error', slide, 'figura-repetida', `La figura${where} ya se usó en la diap. ${drawn.get(key)}.`, 'Cada portada y cada sección llevan dibujos propios: dibuje otra.')
+        const ref = REFERENCES.find(r => similarFigures(r.fig, m))
+        const prev = drawn.find(d => similarFigures(d.fig, m))
+        if (ref)
+          report('error', slide, 'figura-copiada', `La figura${where} es una copia (o copia retocada) ${ref.from}.`, `No reutilice dibujos de otras presentaciones: dibuje una figura propia de ${what}.`)
+        else if (prev)
+          report('error', slide, 'figura-repetida', `La figura${where} repite (o casi) una de la diap. ${prev.no}.`, 'Cada portada y cada sección llevan dibujos propios: dibuje otra.')
         else
-          drawn.set(key, slide.no)
+          drawn.push({ fig: m, no: slide.no })
       })
     }
   }
