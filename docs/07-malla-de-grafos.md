@@ -78,44 +78,42 @@ Una malla genérica funciona, pero si los nodos dibujan algo del tema, la portad
 
 Los nodos de apoyo se colocan en la caja de la figura, lejos de los nodos del dibujo para no confundirlo, pero a distancia de vecino para tejerse con él. Se mueven con la figura: tienen ranura propia, respiran y derivan entre formas como los demás. La figura se lee primero por grosor, y la malla secundaria la convierte en red.
 
-### 6.1 Uso
+### 6.1 Uso: dibujos propios, obligatorios
 
-En el frontmatter de la portada o de un separador:
+> **Actualización (2026-11-25):** las figuras por nombre se retiraron. En la primera prueba con un agente, este solo usó las figuras de la biblioteca, aunque no dijeran nada del tema. Ahora cada portada y cada separador dibujan sus propias figuras.
+
+En el frontmatter de la portada y de **cada** separador, de 2 a 4 figuras:
 
 ```yaml
-mesh: embudo                 # una forma de la biblioteca
-mesh: [arbol, libro]         # varias: la malla deriva de una a la siguiente
-mesh:                        # una forma propia
-  angle: -30                 # opcional, en grados
-  nodes: [[0, 0], [50, 0, 1], [100, 0], [0, 60], [50, 60], [100, 60]]   # [x, y] o [x, y, tamaño 0–1]
-  edges: [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5]]
+mesh:
+  - label: Lupa, la revisión de literatura
+    nodes: [[58.3, 58.3], [26.5, 66.9], [3.1, 43.5], [11.7, 11.7], [43.5, 3.1], [66.9, 26.5], [100, 100, 1]]
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 6]]
+  - label: Embudo, acotar el tema de lo general a lo particular
+    nodes: [[0, 12], [22, 2], [78, 2], [100, 12], [78, 22], [22, 22], [43, 72], [57, 72], [43, 96, 0.9], [57, 96, 0.9]]
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 6], [3, 7], [6, 8], [7, 9]]
 ```
 
-Sin `mesh` (o con `mesh: red`) se dibuja la malla aleatoria de siempre. Las coordenadas se escriben en cualquier unidad: el tema las normaliza y encaja la figura en una caja del panel (sobre el número, en los separadores).
+Las coordenadas van en cualquier unidad, con `y` hacia abajo. El tema las normaliza y encaja la figura en una caja del panel (en los separadores, sobre el número). `label` no se dibuja: obliga a quien dibuja a decir qué representa la figura y qué tiene que ver con el tema, y aparece en la vista previa.
 
-### 6.2 Biblioteca
+**Vista previa:** `npm run figuras` (`plas-figuras`, en el tema) dibuja las aristas de cada figura, encajadas como lo hace el tema, en `export/figuras.png`. Es el paso de revisión de un agente: dibujar, mirar y corregir.
 
-| Figura | Nodos | Aristas | Sugerida para |
-|---|---|---|---|
-| `libro` | 10 | 11 | Escritura, tesis, lectura |
-| `lapiz` | 7 | 9 | Redactar, taller |
-| `embudo` | 10 | 10 | Acotar, de lo general a lo particular |
-| `arbol` | 9 | 8 | Estructura, jerarquía, índice, árbol sintáctico |
-| `bombilla` | 11 | 13 | Idea, motivación, propuesta |
-| `lupa` | 7 | 7 | Búsqueda, revisión de literatura, análisis |
+### 6.2 Ejemplos
 
-Fuente única: `theme/composables/meshFigures.json`, que también lee `plas-check`. Para agregar una figura a la biblioteca, añádala allí con su `description`.
+`theme/utils/figureExamples.json` guarda las seis figuras de la antigua biblioteca (`libro`, `lapiz`, `embudo`, `arbol`, `bombilla`, `lupa`). Ya no se pueden usar por nombre. El validador las usa para rechazar copias. Las presentaciones `poc/`, `showcase/` y `ejemplos/taller-escritura/` tienen dibujos propios para cada portada y separador, y sirven de referencia.
 
 ### 6.3 Límites (nivel 2: los comprueba `plas-check`)
 
 | Regla | Límite |
 |---|---|
-| Nodos por forma | 6 a 18 |
-| Aristas por forma | 6 a 28, sin repetir |
+| Figuras | Obligatorias en la portada y en cada separador: 2 a 4 |
+| `label` | Obligatorio en cada figura |
+| Nodos por figura | 6 a 18 |
+| Aristas por figura | 6 a 28, sin repetir |
 | Nodos sueltos | Ninguno: todo nodo tiene al menos una arista |
-| Formas por diapositiva | 1 a 4 |
+| Copias | Ninguna figura puede ser un ejemplo de `figureExamples.json` ni repetirse en la presentación. Se comparan sin importar la escala, la posición ni el orden de los nodos |
 
-Fuente única: `theme/utils/figureRules.mjs` (la usan el tema y el validador). El mínimo evita dibujos que no se reconocen ni parecen una red; el máximo impide rellenar el panel.
+Fuente única: `theme/utils/figureRules.mjs` (la usan el tema, el validador y la vista previa). El mínimo de nodos evita dibujos que no se reconocen ni parecen una red; el máximo impide rellenar el panel. Lo que el validador no puede comprobar, que la figura diga algo del tema, lo pide `template/AGENTS.md`, y `label` lo deja por escrito.
 
 ### 6.4 Movimiento: deriva consciente
 

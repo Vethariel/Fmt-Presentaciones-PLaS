@@ -19,6 +19,7 @@ Todos los comandos se ejecutan dentro de esta carpeta:
 ```bash
 npm run dev       # vista previa en http://localhost:3030
 npm run build     # versión web en dist/
+npm run figuras   # dibuja las figuras de la malla en export/figuras.png
 npm run check     # compila y valida: reglas estáticas + renderizado web y PDF
 npm run export    # PDF en export/
 ```
@@ -170,20 +171,40 @@ Los componentes propios de la presentación van en `components/`. Todo component
 | `<Frames :labels="[…]">` | Tira de fotogramas: versión impresa de una animación | — (ya es estática) |
 | `<Interactive>` | Contenedor de herramientas | Obligatorio `<template #print>`; el PDF añade un QR a la web |
 | `<ProjectCard>` | Proyecto: `title`, `kind`, `level`, `people`, `funding` | Igual |
-| `<NetworkMesh>` | Malla de grafos decorativa (la usan portada y separadores). Se controla con `mesh` (ver abajo) | Primera forma, estática |
+| `<NetworkMesh>` | Malla de grafos de portada y separadores. Se controla con `mesh` (ver «Figuras de la malla») | Primera figura, estática |
 | `<LogoRow>` | Fila de logos UNAL │ Facultad │ PLaS | Igual |
 
-**Figura de la malla (`mesh`):** en la portada y en los separadores, la malla puede dibujar algo relacionado con el tema. Elija la figura que **diga algo de la sección**; si ninguna aplica, no use `mesh`.
+## Figuras de la malla (`mesh`): obligatorias y propias
+
+La portada y **cada** separador dibujan con su malla de grafos **de 2 a 4 figuras propias**. La malla pasa lentamente de una figura a otra. Las figuras se dibujan para esta presentación: no hay figuras por nombre, y el validador rechaza copias de los ejemplos y figuras repetidas.
+
+**Qué dibujar.** Cada figura debe decir algo del tema:
+
+- En la **portada**: de la presentación entera (su objeto, su campo, su resultado).
+- En un **separador**: de esa sección. Lea su título y su `question` y dibuje objetos concretos que respondan a ellos.
+- Prefiera **objetos reconocibles** (un instrumento, un documento, una señal, una herramienta) a ideas abstractas. Las figuras de una misma diapositiva deben ser distintas entre sí y mirar el tema desde ángulos diferentes.
+
+**Cómo dibujar.**
+
+1. Imagine el objeto en una cuadrícula de unos 100 × 100, con `y` hacia **abajo**.
+2. Ponga un nodo en cada esquina o punto de giro: 6 a 18 nodos. Un tercer valor, `[x, y, 1]`, agranda el nodo (sirve como punto o acento).
+3. Una con aristas solo los trazos del dibujo: 6 a 28. Un trazo curvo se aproxima con 3 a 5 nodos. Todo nodo necesita al menos una arista.
+4. Escriba en `label` qué es y qué tiene que ver con el tema.
+5. Ejecute `npm run figuras` y **mire `export/figuras.png`**. Si un dibujo no se reconoce a primera vista, corríjalo o cámbielo por otro.
 
 ```yaml
-mesh: embudo            # una figura: libro, lapiz, embudo, arbol, bombilla, lupa
-mesh: [arbol, libro]    # hasta 4: la malla deriva lentamente de una a otra
-mesh:                   # figura propia: 6–18 nodos, 6–28 aristas, todos unidos
-  nodes: [[0, 0], [50, 0], [100, 0], [0, 60], [50, 60], [100, 60]]
-  edges: [[0, 1], [1, 2], [0, 3], [1, 4], [2, 5], [3, 4], [4, 5]]
+mesh:
+  - label: Lupa, la revisión de literatura
+    nodes: [[58.3, 58.3], [26.5, 66.9], [3.1, 43.5], [11.7, 11.7], [43.5, 3.1], [66.9, 26.5], [100, 100, 1]]
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 6]]
+  - label: Embudo, acotar el tema de lo general a lo particular
+    nodes: [[0, 12], [22, 2], [78, 2], [100, 12], [78, 22], [22, 22], [43, 72], [57, 72], [43, 96, 0.9], [57, 96, 0.9]]
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 6], [3, 7], [6, 8], [7, 9]]
 ```
 
-La figura es la malla principal (trazo grueso); el tema la teje con una malla secundaria delgada sobre los mismos nodos, más unos pocos nodos de apoyo. Dibuje solo las aristas del dibujo. Dibuje con lo mínimo para que se reconozca. El validador rechaza figuras desconocidas o fuera de los límites.
+Estas dos son ejemplos de la técnica: el validador rechaza copiarlas. Opcional: `angle: -30` gira la figura (en grados).
+
+El tema dibuja las aristas de la figura con trazo grueso y teje alrededor una malla secundaria delgada. Por eso hay que dibujar con lo mínimo: los trazos justos para que se reconozca, sin rellenar.
 
 **Navegación automática:** la agenda, la miga de pan y el panel lateral de capítulos (se abre al llevar el mouse al borde izquierdo o con la tecla C, solo en la web) se generan a partir de los separadores (`layout: section`). Dé a cada separador un título corto y claro: es el nombre del capítulo en todos esos lugares.
 
@@ -199,6 +220,7 @@ La figura es la malla principal (trazo grueso); el tema la teje con una malla se
 | Viñetas de primer nivel | máx. 6 |
 | Niveles de anidación | máx. 2 |
 | Palabras por diapositiva | máx. recomendado 110 (aviso) |
+| Figuras de la malla | Portada y cada separador: 2 a 4 propias, con `label`; 6–18 nodos y 6–28 aristas cada una; sin copias ni repeticiones |
 | Desborde | Nada puede salirse de la diapositiva ni invadir el pie, ni en la web ni en el PDF |
 
 Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajuste márgenes.
@@ -217,4 +239,5 @@ Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajus
 - Cambiar fuentes, colores, márgenes, la cabecera o el pie desde la presentación.
 - Usar maquetas que no estén en el catálogo.
 - Poner contenido en `<WebOnly>` sin su `<PrintOnly>`.
+- Usar figuras genéricas que no digan nada del tema, o dar por bueno un dibujo sin mirarlo en `export/figuras.png`.
 - Entregar una presentación sin pasar `npm run check`.

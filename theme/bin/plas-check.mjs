@@ -18,12 +18,14 @@ import path from 'node:path'
 import process from 'node:process'
 import { parseSync } from '@slidev/parser'
 import { findBrowser } from '../utils/browser.mjs'
-import { FIGURE_LIMITS, figureErrors } from '../utils/figureRules.mjs'
+import { FIGURE_LIMITS, figureErrors, figureKey } from '../utils/figureRules.mjs'
 
 const LAYOUTS = ['cover', 'agenda', 'section', 'default', 'code', 'interactive']
 const LINES = ['lenguajes', 'educacion', 'embebidos', 'transporte', 'sensado']
 const CONTENT_LAYOUTS = ['default', 'code', 'interactive']
-const FIGURES = JSON.parse(fs.readFileSync(new URL('../composables/meshFigures.json', import.meta.url), 'utf8'))
+// Ejemplos de la documentación: sirven para enseñar, no para copiarlos.
+const EXAMPLES = JSON.parse(fs.readFileSync(new URL('../utils/figureExamples.json', import.meta.url), 'utf8'))
+const EXAMPLE_KEYS = new Map(Object.entries(EXAMPLES).map(([name, f]) => [figureKey(f), name]))
 const LIMITS = { title: 50, sectionTitle: 40, subtitle: 90, bullets: 6, depth: 2, words: 110 }
 
 const args = process.argv.slice(2)
@@ -65,6 +67,7 @@ if (head.theme !== 'plas')
 if (deckLine !== undefined && !LINES.includes(deckLine))
   report('error', null, 'linea-invalida', `themeConfig.line = "${deckLine}" no es una línea válida.`, `Use una de: ${LINES.join(', ')}.`)
 
+const drawn = new Map() // huella de cada figura → diapositiva donde se usó
 deck.slides.forEach((s, i) => {
   const slide = { no: i + 1, line: (s.start ?? 0) + 1 }
   const fm = s.frontmatter ?? {}
@@ -84,26 +87,42 @@ deck.slides.forEach((s, i) => {
       report('aviso', slide, 'titulo-largo', `El título de sección tiene ${h1.length} caracteres (máx. ${LIMITS.sectionTitle}).`, 'Acórtelo; el detalle va en "question".')
   }
 
-  // Figura de la malla (docs/07 §6): solo en portada y separadores
-  if (fm.mesh !== undefined) {
-    if (!['cover', 'section'].includes(layout))
-      report('aviso', slide, 'figura-sin-malla', `"mesh" no tiene efecto en la maqueta "${layout}".`, 'Use "mesh" solo en la portada o en un separador.')
+  // Figuras de la malla (docs/07 §6): portada y separadores dibujan 2–4 figuras propias del tema
+  const howTo = `Dibuje ${FIGURE_LIMITS.minForms} a ${FIGURE_LIMITS.maxForms} figuras propias del tema: mesh: [{ label, nodes, edges }, …]. Véalas con "npm run figuras".`
+  if (['cover', 'section'].includes(layout)) {
+    const what = layout === 'cover' ? 'la presentación' : 'esta sección'
+    if (fm.mesh === undefined) {
+      report('error', slide, 'figura-obligatoria', `La ${layout === 'cover' ? 'portada' : 'sección'} no dibuja nada en la malla.`, `${howTo} Deben decir algo de ${what}.`)
+    }
     else {
       const forms = Array.isArray(fm.mesh) ? fm.mesh : [fm.mesh]
-      if (forms.length < 1 || forms.length > FIGURE_LIMITS.maxForms)
-        report('error', slide, 'figura-invalida', `"mesh" tiene ${forms.length} formas (entre 1 y ${FIGURE_LIMITS.maxForms}).`, 'Deje solo las formas que dicen algo del tema.')
+      if (forms.length < FIGURE_LIMITS.minForms || forms.length > FIGURE_LIMITS.maxForms)
+        report('error', slide, 'figuras-cantidad', `"mesh" tiene ${forms.length} figura${forms.length === 1 ? '' : 's'} (entre ${FIGURE_LIMITS.minForms} y ${FIGURE_LIMITS.maxForms}).`, forms.length < FIGURE_LIMITS.minForms ? `Agregue otra figura que diga algo de ${what}: la malla deriva de una a otra.` : 'Deje solo las figuras que más dicen del tema.')
       forms.forEach((m, k) => {
-        const where = forms.length > 1 ? ` (forma ${k + 1})` : ''
-        if (typeof m === 'string') {
-          if (!(m === 'red' && forms.length === 1) && !(m in FIGURES))
-            report('error', slide, 'figura-desconocida', `La figura "${m}"${where} no existe.`, `Use una de: ${Object.keys(FIGURES).join(', ')}; o dibuje una propia con { nodes, edges }.`)
+        const where = forms.length > 1 ? ` (figura ${k + 1})` : ''
+        if (typeof m === 'string' || !m || typeof m !== 'object') {
+          report('error', slide, 'figura-de-catalogo', `"${m}"${where} no es un dibujo: ya no hay figuras por nombre.`, `${howTo} Deben decir algo de ${what}.`)
+          return
         }
-        else {
-          for (const e of figureErrors(m))
-            report('error', slide, 'figura-invalida', `${e}${where}`, `Dibuje con lo mínimo: ${FIGURE_LIMITS.minNodes}–${FIGURE_LIMITS.maxNodes} nodos [x, y], ${FIGURE_LIMITS.minEdges}–${FIGURE_LIMITS.maxEdges} aristas [i, j], todos los nodos unidos.`)
-        }
+        if (typeof m.label !== 'string' || m.label.trim().length < 3)
+          report('error', slide, 'figura-sin-nombre', `La figura${where} no dice qué dibuja.`, `Agregue label: "<qué representa y por qué tiene que ver con ${what}>".`)
+        const errs = figureErrors(m)
+        for (const e of errs)
+          report('error', slide, 'figura-invalida', `${e}${where}`, `Dibuje con lo mínimo: ${FIGURE_LIMITS.minNodes}–${FIGURE_LIMITS.maxNodes} nodos [x, y], ${FIGURE_LIMITS.minEdges}–${FIGURE_LIMITS.maxEdges} aristas [i, j], todos los nodos unidos.`)
+        if (errs.length)
+          return
+        const key = figureKey(m)
+        if (EXAMPLE_KEYS.has(key))
+          report('error', slide, 'figura-copiada', `La figura${where} es el ejemplo "${EXAMPLE_KEYS.get(key)}" de la guía.`, `Los ejemplos muestran la técnica; dibuje una figura propia de ${what}.`)
+        else if (drawn.has(key))
+          report('error', slide, 'figura-repetida', `La figura${where} ya se usó en la diap. ${drawn.get(key)}.`, 'Cada portada y cada sección llevan dibujos propios: dibuje otra.')
+        else
+          drawn.set(key, slide.no)
       })
     }
+  }
+  else if (fm.mesh !== undefined) {
+    report('aviso', slide, 'figura-sin-malla', `"mesh" no tiene efecto en la maqueta "${layout}".`, 'Use "mesh" solo en la portada o en un separador.')
   }
 
   if (CONTENT_LAYOUTS.includes(layout)) {

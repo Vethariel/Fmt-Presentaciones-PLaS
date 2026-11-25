@@ -5,7 +5,7 @@ import { resolveFigures } from '../composables/figures'
 import symbol from '../assets/plas-symbol.svg?url'
 import { usePlas } from '../composables/usePlas'
 
-/** Separador de sección. Frontmatter: `line` (color), `question` y `mesh` (figura, opcionales). */
+/** Separador de sección. Frontmatter: `line` (color), `question` y `mesh` (2–4 dibujos propios). */
 const props = defineProps<{ question?: string, mesh?: unknown }>()
 const figures = computed(() => resolveFigures(props.mesh))
 const p = usePlas()

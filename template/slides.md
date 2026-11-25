@@ -9,6 +9,7 @@ date: Mes Año
 themeConfig:
   event: Grupo PLaS
   webUrl: https://unplas.github.io/nombre-del-repositorio
+# mesh: 2–4 figuras propias de la presentación (AGENTS.md, «Figuras de la malla»)
 ---
 
 # Título de la presentación
@@ -25,6 +26,7 @@ layout: agenda
 layout: section
 line: lenguajes
 question: ¿Qué pregunta abre esta sección?
+# mesh: 2–4 figuras propias de esta sección
 ---
 
 # Primera sección

@@ -6,6 +6,7 @@
     "dev": "slidev --open=false",
     "build": "slidev build --base /",
     "check": "slidev build --base / && plas-check slides.md --render",
+    "figuras": "plas-figuras slides.md",
     "export": "plas-export slides.md export/presentacion.pdf"
   }
 }

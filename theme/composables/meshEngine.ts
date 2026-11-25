@@ -250,7 +250,7 @@ export interface Figure {
   nodes: ([number, number] | [number, number, number])[]
   edges: [number, number][]
   angle?: number
-  description?: string
+  label?: string
 }
 
 /** Una forma ya encajada, expresada sobre las ranuras de nodos comunes a todas las formas. */

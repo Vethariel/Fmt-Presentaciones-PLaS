@@ -9,6 +9,13 @@ date: Noviembre 2026
 themeConfig:
   event: Guía de formato de presentaciones
   webUrl: https://unplas.github.io/plas-slides
+mesh:
+  - label: "Pantalla de proyección con título y gráfica: una presentación"
+    nodes: [[0, 0], [100, 0], [100, 60], [0, 60], [50, 60], [50, 95], [30, 100], [70, 100], [12, 15], [60, 15], [15, 48], [40, 32], [60, 40], [85, 20]]
+    edges: [[0, 1], [1, 2], [2, 4], [4, 3], [3, 0], [4, 5], [5, 6], [5, 7], [8, 9], [10, 11], [11, 12], [12, 13]]
+  - label: "Escuadra con marcas de medida: un formato con reglas"
+    nodes: [[0, 0], [0, 100], [100, 100], [15, 40], [15, 85], [60, 85], [25, 100], [25, 92], [50, 100], [50, 92], [75, 100], [75, 92]]
+    edges: [[0, 1], [1, 6], [6, 8], [8, 10], [10, 2], [2, 0], [3, 4], [4, 5], [5, 3], [6, 7], [8, 9], [10, 11]]
 ---
 
 # Guía de formato de presentaciones
@@ -27,6 +34,13 @@ layout: agenda
 layout: section
 line: lenguajes
 question: ¿Qué tipos de diapositiva ofrece el formato?
+mesh:
+  - label: "Maqueta de diapositiva: cabecera, contenido y columna lateral"
+    nodes: [[0, 0], [100, 0], [100, 56], [0, 56], [0, 14], [100, 14], [62, 14], [62, 56]]
+    edges: [[0, 1], [0, 4], [4, 3], [3, 7], [7, 2], [2, 5], [5, 1], [4, 6], [6, 5], [6, 7]]
+  - label: "Pila de diapositivas: varios tipos, uno detrás de otro"
+    nodes: [[0, 30], [70, 30], [70, 80], [0, 80], [15, 15], [85, 15], [85, 65], [15, 30], [70, 65], [30, 0], [100, 0], [100, 50], [30, 15], [85, 50]]
+    edges: [[0, 7], [7, 1], [1, 8], [8, 2], [2, 3], [3, 0], [7, 4], [4, 12], [12, 5], [5, 13], [13, 6], [6, 8], [12, 9], [9, 10], [10, 11], [11, 13]]
 ---
 
 # Tipos de diapositiva
@@ -91,6 +105,13 @@ Cada categoría de sintaxis usa el tono oscuro de una línea de investigación.
 layout: section
 line: educacion
 question: ¿Cómo se escribe el contenido dentro de una diapositiva?
+mesh:
+  - label: "Tabla de tres por tres: datos dentro de la diapositiva"
+    nodes: [[0, 0], [100, 0], [100, 75], [0, 75], [0, 25], [100, 25], [0, 50], [100, 50], [40, 0], [40, 75], [70, 0], [70, 75]]
+    edges: [[0, 8], [8, 10], [10, 1], [1, 5], [5, 7], [7, 2], [2, 11], [11, 9], [9, 3], [3, 6], [6, 4], [4, 0], [4, 5], [6, 7], [8, 9], [10, 11]]
+  - label: "Sigma: las ecuaciones como elemento de contenido"
+    nodes: [[100, 0], [0, 0], [50, 50], [0, 100], [100, 100], [100, 14], [100, 86]]
+    edges: [[5, 0], [0, 1], [1, 2], [2, 3], [3, 4], [4, 6]]
 ---
 
 # Elementos de contenido

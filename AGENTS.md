@@ -21,7 +21,7 @@ Todo lo que genere va en **`presentaciones/<nombre>/`** y en ningún otro lugar.
 |---|---|
 | `docs/` | Decisiones numeradas (01–08, 10) y guía de formato (09). Léalas antes de cambiar el sistema |
 | `brand/` | Logos PLaS (SVG redibujados) y escudo UNAL |
-| `theme/` | `slidev-theme-plas`: tokens (`styles/`), maquetas (`layouts/`), componentes, tema de sintaxis (`setup/shiki.ts`) validador (`bin/plas-check.mjs`) y exportador (`bin/plas-export.mjs`) |
+| `theme/` | `slidev-theme-plas`: tokens (`styles/`), maquetas (`layouts/`), componentes, tema de sintaxis (`setup/shiki.ts`) validador (`bin/plas-check.mjs`), exportador (`bin/plas-export.mjs`) y vista previa de figuras (`bin/plas-figuras.mjs`) |
 | `poc/` | Presentación de prueba de concepto |
 | `showcase/` | Presentación de muestra: usa cada maqueta y elemento; fuente de las imágenes de docs/09 y prueba de regresión visual |
 | `template/` | Lo que `npm run nueva` copia en cada presentación nueva, con su `AGENTS.md` |
@@ -47,6 +47,6 @@ npm run test:check               # el validador DEBE fallar con la presentación
 2. **Paridad web ⇄ PDF**: todo componente animado o interactivo necesita una versión impresa (docs/03 §5).
 3. **Las reglas suben de nivel**: si una regla de `template/AGENTS.md` se puede imponer desde el tema (nivel 1) o comprobar en `plas-check` (nivel 2), muévala allí (docs/03 §8.1).
 4. **La plantilla se copia, no se enlaza**: un cambio en `template/` solo llega a las presentaciones nuevas. Los cambios en `theme/` llegan a todas.
-5. **Listas sincronizadas**: las maquetas y las líneas están en `theme/composables/usePlas.ts` y en `theme/bin/plas-check.mjs`. Si cambia una, cambie la otra y `template/AGENTS.md`. Las figuras de la malla (`theme/composables/meshFigures.json`) y sus límites (`theme/utils/figureRules.mjs`) tienen una sola fuente, compartida por el tema y el validador; si cambian, actualice docs/07 §6 y `template/AGENTS.md`.
+5. **Listas sincronizadas**: las maquetas y las líneas están en `theme/composables/usePlas.ts` y en `theme/bin/plas-check.mjs`. Si cambia una, cambie la otra y `template/AGENTS.md`. Los límites de las figuras de la malla (`theme/utils/figureRules.mjs`) tienen una sola fuente, compartida por el tema, el validador y `plas-figuras`; los ejemplos que no se pueden copiar están en `theme/utils/figureExamples.json`. Si cambian, actualice docs/07 §6 y `template/AGENTS.md`.
 6. **Contraste**: el color base de una línea nunca va en texto; use `--dark` (docs/04 §4).
 7. Después de cualquier cambio: `npm run check`, `npm run test:check` y revisar el PDF exportado.
