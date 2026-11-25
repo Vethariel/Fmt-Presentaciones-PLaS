@@ -9,6 +9,7 @@
     "ejemplos/*"
   ],
   "scripts": {
+    "nueva": "node tools/nueva.mjs",
     "dev": "npm run dev -w poc",
     "build": "npm run build -w poc",
     "export": "npm run export -w poc",

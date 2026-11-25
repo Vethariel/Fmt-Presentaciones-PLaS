@@ -36,7 +36,8 @@
     "@slidev/parser": "53.1.0"
   },
   "bin": {
-    "plas-check": "./bin/plas-check.mjs"
+    "plas-check": "./bin/plas-check.mjs",
+    "plas-export": "./bin/plas-export.mjs"
   },
   "peerDependencies": {
     "playwright-chromium": ">=1.40.0"

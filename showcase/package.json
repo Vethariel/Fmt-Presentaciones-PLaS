@@ -6,7 +6,7 @@
     "dev": "slidev --open=false",
     "build": "slidev build --base /",
     "check": "plas-check slides.md --render",
-    "export": "slidev export --executable-path /usr/bin/google-chrome --output export/plas-showcase.pdf"
+    "export": "plas-export slides.md export/plas-showcase.pdf"
   },
   "dependencies": {
     "@slidev/cli": "53.1.0",

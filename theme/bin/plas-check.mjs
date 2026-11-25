@@ -17,6 +17,7 @@ import http from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 import { parseSync } from '@slidev/parser'
+import { findBrowser } from '../utils/browser.mjs'
 import { FIGURE_LIMITS, figureErrors } from '../utils/figureRules.mjs'
 
 const LAYOUTS = ['cover', 'agenda', 'section', 'default', 'code', 'interactive']
@@ -172,9 +173,7 @@ async function renderChecks() {
   })
   await new Promise(res => server.listen(0, res))
   const base = `http://localhost:${server.address().port}`
-  // Navegador: PLAS_CHROME, o Chrome del sistema, o el Chromium de Playwright.
-  const executablePath = process.env.PLAS_CHROME
-    ?? ['/usr/bin/google-chrome', '/usr/bin/chromium', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(p => fs.existsSync(p))
+  const executablePath = findBrowser()
   const browser = await chromium.launch(executablePath ? { executablePath } : {})
   const page = await browser.newPage({ viewport: { width: 960, height: 540 } })
   try {

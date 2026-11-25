@@ -4,12 +4,22 @@ Esta presentación usa el formato del grupo PLaS (tema `slidev-theme-plas`, sobr
 
 > **Regla de oro: la web es el PDF que además se mueve.** Nada puede existir solo en la web.
 
+## Dónde trabajar
+
+Esta carpeta (`presentaciones/<nombre>/` dentro del repositorio del formato) es **su único espacio de trabajo**:
+
+- Escriba en `slides.md` y ponga los componentes propios en `components/`. Las imágenes van en `public/` y se citan como `/imagen.png`.
+- No modifique nada fuera de esta carpeta (el tema, la plantilla, otras presentaciones). Si el formato no permite algo, dígaselo al usuario.
+- No ejecute `npm install` aquí: el tema y las herramientas se instalan en la raíz del repositorio.
+
 ## Flujo de trabajo obligatorio
+
+Todos los comandos se ejecutan dentro de esta carpeta:
 
 ```bash
 npm run dev       # vista previa en http://localhost:3030
 npm run build     # versión web en dist/
-npm run check     # validador: reglas estáticas + renderizado web y PDF
+npm run check     # compila y valida: reglas estáticas + renderizado web y PDF
 npm run export    # PDF en export/
 ```
 

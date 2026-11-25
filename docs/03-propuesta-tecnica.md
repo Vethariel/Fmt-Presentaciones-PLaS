@@ -68,6 +68,7 @@ plas-slides/                      ← monorepo del formato
 
 - El **tema** se versiona por separado. Cada presentación declara qué versión usa, así que una mejora del tema no rompe las presentaciones ya publicadas.
 - Cada presentación vive en **su propio repositorio**, creado a partir de `template/`.
+  > **Actualización:** el doc. [10](10-donde-viven-las-presentaciones.md) cambia esto: las presentaciones se crean en `presentaciones/<nombre>/` dentro del clon de este repositorio.
 - La **muestra** (`showcase/`) sirve de documentación visual y de prueba de regresión: si cambia algo del tema, se revisa contra ella.
 
 ## 5. Principio rector: paridad entre web y PDF

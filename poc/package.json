@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "slidev --open=false",
     "build": "slidev build --base /",
-    "export": "slidev export --executable-path /usr/bin/google-chrome --output export/plas-poc.pdf",
+    "export": "plas-export slides.md export/plas-poc.pdf",
     "check": "plas-check slides.md --render"
   },
   "dependencies": {

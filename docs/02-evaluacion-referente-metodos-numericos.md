@@ -6,6 +6,8 @@
 
 ## 1. Material analizado
 
+Los archivos son de terceros: se guardan en `referencias/` pero no se versionan.
+
 | Archivo | Diapositivas | Herramienta | Tipografías |
 |---|---|---|---|
 | `1. Introduction.pdf` | 100 | PowerPoint para Microsoft 365 | Calibri, Cambria Math, Tw Cen MT |

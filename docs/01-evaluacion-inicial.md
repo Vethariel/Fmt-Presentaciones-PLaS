@@ -5,6 +5,8 @@
 
 ## 1. Material analizado
 
+Los archivos están en [`referencias/`](../referencias/).
+
 | Archivo | Diapositivas | Tipo de presentación |
 |---|---|---|
 | `PLaS_intro.pdf` | 15 (el pie llega a 16, así que hay una oculta o un salto en la numeración) | Presentación institucional del grupo |

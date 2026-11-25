@@ -3,6 +3,11 @@ dist
 export
 .slidev
 
+# Presentaciones creadas con `npm run nueva`: son de cada autor, no del formato.
+# Si quiere versionar la suya, haga `git init` dentro de su carpeta.
+presentaciones/*
+!presentaciones/README.md
+
 # Material de referencia de terceros (curso de Métodos Numéricos), no se versiona
-1. Introduction.pdf
-7. Ordinary Differential Equations.pdf
+referencias/1. Introduction.pdf
+referencias/7. Ordinary Differential Equations.pdf

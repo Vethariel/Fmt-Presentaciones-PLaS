@@ -90,7 +90,7 @@ Cada problema se convirtió en una regla del sistema, para que no se repita:
 1. **El código animado se escribe dos veces:** una para Magic Move y otra para `<Frames>`. El validador garantiza que existan las dos versiones, pero no que coincidan. *Mejora:* un componente que genere ambas a partir de un solo bloque.
 2. **Faltan 8 maquetas del catálogo** (doc. 03 §6): `cover-brand`, `two-cols`, `diagram`, `math`, `project` (hoy cubierta en parte por `<ProjectCard>`), `quote`, `team` y `closing`.
 3. **Las listas de maquetas y líneas están duplicadas** en `usePlas.ts` y en `plas-check.mjs`. *Mejora:* un único archivo de configuración compartido.
-4. **No hay forma de instalar el tema desde fuera.** `slidev-theme-plas` solo existe en este repositorio. Hay que decidir cómo se instala en los repositorios de cada presentación (paquete en GitHub Packages, dependencia de Git o publicación en npm).
+4. **No hay forma de instalar el tema desde fuera.** `slidev-theme-plas` solo existe en este repositorio. Hay que decidir cómo se instala en los repositorios de cada presentación (paquete en GitHub Packages, dependencia de Git o publicación en npm). *Resuelto en el doc. [10](10-donde-viven-las-presentaciones.md): las presentaciones se escriben dentro del clon y no hace falta instalar el tema por separado.*
 5. **No se ha probado `v-click` en el PDF.** Slidev muestra el estado final, pero no se ha comprobado con contenido real.
 6. **No hay despliegue automático a GitHub Pages:** falta el flujo de trabajo de CI (compilar, validar, exportar el PDF y publicar los dos).
 7. Slidev 53.1.0 se publicó el 5 de noviembre de 2026; conviene fijar la versión y actualizarla con la presentación de prueba como prueba de regresión.
@@ -99,5 +99,5 @@ Cada problema se convirtió en una regla del sistema, para que no se repita:
 
 1. **Ejecutar el criterio 4:** pedir a un agente sin contexto que escriba 2 o 3 diapositivas nuevas usando solo `template/AGENTS.md`, y ajustar la guía según los fallos.
 2. **Completar el catálogo de maquetas**, empezando por `closing`, `team` y `two-cols`, que son las más usadas en `PLaS_intro`.
-3. **Definir cómo se distribuye el tema** y crear el flujo de CI para GitHub Pages.
+3. ~~Definir cómo se distribuye el tema~~ (doc. 10) y crear el flujo de CI para GitHub Pages.
 4. **Migrar las dos presentaciones reales** (`PLaS_intro` y el taller de escritura) como validación final, según el paso 4 del doc. 01 §7.
