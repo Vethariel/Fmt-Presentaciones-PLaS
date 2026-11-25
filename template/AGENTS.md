@@ -14,7 +14,7 @@ Esta carpeta (`presentaciones/<nombre>/` dentro del repositorio del formato) es 
 
 ## Flujo de trabajo obligatorio
 
-Todos los comandos se ejecutan dentro de esta carpeta:
+Antes de escribir, arme la historia (ver «Lenguaje y narrativa»). Todos los comandos se ejecutan dentro de esta carpeta:
 
 ```bash
 npm run dev       # vista previa en http://localhost:3030
@@ -59,6 +59,50 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 `plas` no es una línea: usa los colores de la marca del grupo. Úsela en las secciones que no pertenecen a ninguna línea (el grupo, cómo unirse, cierre). No la use para evitar elegir la línea de una sección que sí tiene una.
 
 **Nunca escriba colores a mano** (hex, `style="color…"`). El tema aplica el color de la línea a viñetas, énfasis, bordes y números. El texto en negrita (`**…**`) toma automáticamente el tono oscuro legible de la línea.
+
+## Lenguaje y narrativa
+
+Una presentación es una explicación que alguien dice en voz alta, apoyada en diapositivas. El texto de cada diapositiva debe sonar como lo diría quien presenta: claro, concreto y conectado con lo anterior. Aplique estas pautas con su propio criterio; el validador no las revisa.
+
+**Primero la historia, después las diapositivas.** Antes de escribir `slides.md`, escriba la lista de títulos en orden y léala de corrido. Debe contar la presentación por sí sola: el contexto, el problema, qué se hizo, qué se encontró y qué sigue. Cada sección responde a la `question` de su separador, y su última diapositiva cierra esa respuesta. Si un título no se entiende sin el anterior, o si dos títulos dicen lo mismo, la historia tiene un hueco o una repetición.
+
+**Frases completas y conectadas.**
+
+- Escriba títulos y viñetas como frases con sujeto y verbo. Un fragmento suelto («Del sensor a la nube, sin cables») obliga al público a adivinar la relación entre las partes.
+- Diga la relación con un conector: *porque*, *por eso*, *así*, *para*, *aunque*, *sin embargo*, *en cambio*, *primero*… *después*. La coma y los dos puntos no reemplazan al conector.
+- Evite las fórmulas de eslogan:
+  - contraposiciones del tipo «X, no Y» o «No es solo X: es Y»;
+  - tríadas por costumbre;
+  - revelaciones tras dos puntos («La clave: …»);
+  - adjetivos de folleto: *innovador*, *revolucionario*, *robusto*, *integral*, *potente*.
+
+  Suenan a anuncio y no informan.
+- Prefiera lo concreto a lo general. «La boya mide cada 10 minutos» dice más que «Monitoreo continuo».
+
+**Títulos y subtítulos.** El título dice de qué trata la diapositiva o, mejor, qué muestra («El oxígeno baja después de las lluvias»). El subtítulo agrega lo que falta (el alcance, la fuente, una advertencia) y no repite el título con otras palabras.
+
+**Viñetas.** Cada viñeta es una idea completa y todas tienen la misma forma gramatical. Si las ideas forman una secuencia o una causa, escriba una o dos frases en lugar de una lista: la lista oculta el «por eso».
+
+**Para quién habla.** Use palabras que el público conoce. Ante un público no técnico, explique cada término técnico la primera vez que aparece (por ejemplo, «oxígeno disuelto: el oxígeno que pueden respirar los peces»). Mantenga el mismo trato (tú o usted) de principio a fin.
+
+**Ejemplo.**
+
+| Evite | Prefiera |
+|---|---|
+| Del humedal a la universidad, sin cables | Cada boya envía sus datos por radio hasta la universidad |
+| Tres prototipos, cada uno mejor | Hicieron falta tres prototipos para que la boya funcionara |
+| Datos disponibles, decisiones sin datos | Los datos existen, pero no se usan para decidir dónde intervenir |
+| Rapidez. Consistencia. Escala. | La corrección automática responde en segundos y califica igual todas las entregas |
+| Una señal, todavía no una conclusión | Los datos de una sola boya no alcanzan para concluir |
+
+Una sección contada con títulos conectados:
+
+1. El humedal recibe aguas residuales cuando llueve
+2. Medimos el oxígeno disuelto para detectar esos vertimientos
+3. Después de cada lluvia fuerte, el oxígeno cae a la mitad
+4. Por eso proponemos instalar más boyas en las entradas de agua
+
+**Revisión final.** Antes de entregar, relea en voz alta los títulos en orden y después cada diapositiva. Corrija toda frase que quien presenta no diría tal cual frente al público.
 
 ## Maquetas: estructura y biblioteca de tipologías
 
@@ -173,7 +217,7 @@ caption: Robot educativo en una clase de quinto grado
 side: right
 ---
 
-# Programar sin teclado
+# Los niños programan sin usar el teclado
 
 Los estudiantes **arman el programa** con bloques físicos y el robot lo ejecuta.
 ```
@@ -189,7 +233,7 @@ images:
   - { src: /prototipo-3.png, caption: Versión final, credit: "Generada con IA (Gemini)" }
 ---
 
-# Tres prototipos en un año
+# Hicimos tres prototipos en un año
 ```
 
 **Tabla con comentario**
@@ -208,7 +252,7 @@ layout: table
 
 ::comment::
 
-La precisión **se mantiene** con ejercicios más largos.
+La precisión **apenas baja** en Programación II, aunque los ejercicios son más largos.
 ```
 
 **Idea clave y cita**
@@ -218,18 +262,18 @@ La precisión **se mantiene** con ejercicios más largos.
 layout: statement
 ---
 
-# La conclusión
+# Escribimos una vez para la web y el PDF
 
-Una sola fuente produce **la web y el PDF**.
+Una sola fuente produce **las dos versiones** de la presentación.
 
-Nada puede existir solo en la web.
+Por eso nada puede existir solo en la web.
 
 ---
 layout: quote
 cite: Alan Kay, 1971
 ---
 
-# Por qué inventar
+# Inventar también es una forma de anticipar
 
 > La mejor forma de predecir el futuro es inventarlo.
 ```
@@ -437,4 +481,5 @@ Si algo no cabe: **divida la diapositiva**. No reduzca tamaños de letra ni ajus
 - Usar figuras genéricas que no digan nada del tema, o dar por bueno un dibujo sin mirarlo en `export/figuras.png`.
 - Encadenar diapositivas `default` cuando el contenido pide otra tipología.
 - Usar imágenes sin licencia clara, o enlazarlas desde internet en lugar de descargarlas.
+- Escribir títulos o viñetas como fragmentos sueltos o eslóganes, sin decir cómo se relacionan las ideas.
 - Entregar una presentación sin pasar `npm run check`.

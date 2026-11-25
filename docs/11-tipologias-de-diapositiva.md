@@ -87,6 +87,24 @@ El agente buscó una foto con licencia libre en Wikimedia Commons, hizo tres com
 | `line: plas` en modo línea | Aclarado: en modo línea ningún separador lleva `line` |
 | Otros canales de contacto | Van como párrafo en el cuerpo de `closing` |
 
-## 7. Corrección encontrada en el camino
+## 7. Lenguaje y narrativa (2026-11-25)
+
+En la cuarta prueba los textos cumplían las reglas, pero varios títulos eran fragmentos con tono de eslogan: «Del humedal a la universidad, sin cables», «Tres prototipos, cada uno mejor». Una frase corta sin conector deja la relación entre las ideas a cargo del público y suena pretenciosa.
+
+`template/AGENTS.md` tiene ahora la sección «Lenguaje y narrativa». Pide:
+
+- armar primero la historia como lista de títulos;
+- escribir frases completas, unidas con conectores;
+- evitar fórmulas de eslogan;
+- usar subtítulos que agreguen información;
+- escribir viñetas paralelas, o una frase cuando hay causa o secuencia;
+- adaptar el vocabulario al público;
+- hacer una relectura final en voz alta.
+
+Trae una tabla «Evite / Prefiera» y una sección de ejemplo contada con títulos.
+
+No hay regla en el validador: juzgar si una frase es clara depende del criterio del agente. Los ejemplos de la propia guía se corrigieron porque tenían el mismo defecto, y un agente imita los ejemplos más que las reglas.
+
+## 8. Corrección encontrada en el camino
 
 En `poc/`, `showcase/` y `ejemplos/*`, `npm run check` validaba el `dist/` existente sin compilar. Con una presentación modificada, las reglas de renderizado revisaban una versión vieja. Ahora esos `check` compilan primero (como la plantilla), y `plas-check --render` rechaza un `dist/` anterior a `slides.md`, `components/` o `public/` (`build-viejo`).
