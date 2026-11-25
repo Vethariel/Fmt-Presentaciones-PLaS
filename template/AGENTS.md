@@ -51,7 +51,7 @@ Una presentación es una explicación que alguien dice en voz alta, apoyada en d
 - **Primero la historia.** Antes de escribir, haga la lista de títulos en orden y léala de corrido: debe contar la presentación por sí sola (contexto, problema, qué se hizo, qué se encontró, qué sigue). Cada sección responde a la `question` de su separador.
 - **Frases completas y conectadas.** Títulos y viñetas con sujeto y verbo, y la relación entre ideas dicha con un conector (*porque*, *por eso*, *aunque*, *en cambio*…). Una coma o unos dos puntos no reemplazan al conector.
 - **Sin fórmulas de eslogan:** «X, no Y», tríadas por costumbre, «La clave: …», adjetivos de folleto (*innovador*, *robusto*, *integral*). Prefiera lo concreto: «La boya mide cada 10 minutos» dice más que «Monitoreo continuo».
-- **El título dice qué muestra la diapositiva;** el subtítulo agrega lo que falta y no repite el título.
+- **El título dice qué muestra la diapositiva,** en una frase completa pero corta: cabe en una línea, unos 50 caracteres (40 en un separador). El subtítulo agrega lo que falta y no repite el título.
 - **Para quién habla.** Palabras que el público conoce; explique los términos técnicos la primera vez ante público no técnico. Trato según la formalidad: *usted* en sustentaciones, avances e institucionales; *tú* en clases, talleres y semilleros. El mismo de principio a fin.
 - Marque las cifras que no son definitivas («Resultados preliminares, sin validar»).
 
