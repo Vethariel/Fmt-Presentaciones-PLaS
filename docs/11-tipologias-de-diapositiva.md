@@ -15,8 +15,8 @@ Cada forma de mostrar un contenido es una maqueta. Así el agente elige por nomb
 |---|---|---|
 | `default` | Explicación con pocas ideas | Existía; `::aside::` opcional |
 | `two-cols` | Dos cosas en paralelo o en comparación | `::right::`; `### Encabezado` por columna |
-| `image-text` | Imagen que explica, con texto | `image`, `credit`, `caption`, `side`, `fit` |
-| `image` | Imagen protagonista | `image`, `credit`, `caption`, `fit` |
+| `image-text` | Imagen, diagrama o gráfico que explica, con texto | `image`, `credit`, `caption`, `side`, `fit`; o `::figure::` con un componente |
+| `image` | Imagen, diagrama o gráfico protagonista | `image`, `credit`, `caption`, `fit`; o `::figure::` con un componente |
 | `gallery` | 2 a 6 imágenes del mismo tipo | `images: [{ src, caption, credit }]`; galería justificada (§4) |
 | `table` | Datos tabulados | Tabla Markdown y `::comment::` en un contenedor de color |
 | `statement` | Una sola idea clave | Contenedor de color; primer párrafo grande |
@@ -61,6 +61,20 @@ Que la tipología sea **la más pertinente** para el contenido no se puede compr
 
 **Galería justificada.** Con celdas iguales, las imágenes de distinta proporción quedaban recortadas (`cover`) o con franjas vacías de distinto tamaño (`contain`). Ahora todas las imágenes de una fila tienen la misma altura y cada una toma el ancho de su proporción. La maqueta prueba todos los repartos en filas (en orden, hasta 4 por fila) y elige el que deja las imágenes más grandes dentro del espacio disponible. Si no cabe, reduce todo por igual y centra las filas. Ninguna imagen se recorta.
 
-## 5. Corrección encontrada en el camino
+## 5. Ajustes tras la tercera prueba con un agente (2026-11-25)
+
+Un agente sin contexto hizo una presentación de 16 diapositivas con 8 tipologías bien elegidas, 0 errores y dos esquemas propios. Lo que faltaba:
+
+| Hallazgo | Ajuste |
+|---|---|
+| Un esquema del método como PNG se leía pequeño, aunque pasaba el validador | Los diagramas y gráficos con texto se hacen como componentes en `components/`. `image` e `image-text` aceptan `::figure::` en lugar de la imagen. La guía pide letra de 14 px o más en componentes y de 24 px o más en imágenes con texto. El validador no puede medir texto dentro de un PNG, así que esto queda en la guía |
+| Los resultados numéricos quedaron en una tabla escueta | La guía pide un gráfico propio para cifras y tendencias; la tabla, para valores exactos |
+| No buscó fotos del contexto real | La guía pide al menos una foto del contexto cuando el tema ocurre en un lugar o con objetos reales |
+| Puso el equipo entre la portada y la agenda, sin sección | Se permite una sola diapositiva de presentación antes de la primera sección; el validador avisa si hay más (`fuera-de-seccion`) |
+| La guía no decía cómo hacer imágenes | Las fuentes de imágenes dependen de las capacidades del entorno del agente (código, generación de imágenes, navegación). El agente usa las que tiene, no simula las que no tiene y lo informa |
+
+`showcase/` muestra un gráfico propio en `::figure::` (`components/BarrasTipologias.vue`).
+
+## 6. Corrección encontrada en el camino
 
 En `poc/`, `showcase/` y `ejemplos/*`, `npm run check` validaba el `dist/` existente sin compilar. Con una presentación modificada, las reglas de renderizado revisaban una versión vieja. Ahora esos `check` compilan primero (como la plantilla), y `plas-check --render` rechaza un `dist/` anterior a `slides.md`, `components/` o `public/` (`build-viejo`).

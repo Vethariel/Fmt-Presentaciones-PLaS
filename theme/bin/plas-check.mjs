@@ -210,11 +210,11 @@ deck.slides.forEach((s, i) => {
   }
 
   // Visual: maqueta de imagen, imagen suelta o un diagrama propio de components/
-  const visual = /!\[[^\]]*\]\(|<img\b/.test(text) || OWN_COMPONENTS.some(c => new RegExp(`<${c}\\b`).test(content))
+  const visual = /!\[[^\]]*\]\(|<img\b|^::figure::\s*$/m.test(content) || OWN_COMPONENTS.some(c => new RegExp(`<${c}\\b`).test(content))
   sequence.push({ no: slide.no, line: slide.line, layout, visual })
 
   // Reglas de cada tipología (docs/11 §2)
-  if (layout === 'image-text' || layout === 'image')
+  if ((layout === 'image-text' || layout === 'image') && !/^::figure::\s*$/m.test(content))
     checkImage(slide, fm.image, fm.credit, '', layout === 'image' ? 1600 : 1200)
   if (layout === 'gallery') {
     const imgs = Array.isArray(fm.images) ? fm.images : []
@@ -336,6 +336,11 @@ deck.slides.forEach((s, i) => {
     if (!content.some(x => IMAGE_LAYOUTS.includes(x.layout) || x.layout === 'team' || x.visual))
       report('aviso', null, 'sin-imagenes', 'La presentación no tiene imágenes.', 'Si el tema lo permite, muestre: fotos, capturas, diagramas o esquemas propios, imágenes generadas o de licencia libre (AGENTS.md, «Imágenes»).')
   }
+  // Antes de la primera sección solo caben la portada, la agenda y, como mucho, una diapositiva de presentación (p. ej. el equipo)
+  const firstSection = sequence.findIndex(x => x.layout === 'section')
+  const loose = (firstSection < 0 ? [] : sequence.slice(0, firstSection)).filter(x => CONTENT_LAYOUTS.includes(x.layout))
+  if (loose.length > 1)
+    report('aviso', loose[1], 'fuera-de-seccion', `${loose.length} diapositivas de contenido antes de la primera sección (diap. ${loose.map(x => x.no).join(', ')}).`, 'Antes de la primera sección deje solo una diapositiva de presentación (el equipo, por ejemplo); el resto va dentro de una sección.')
   const closings = sequence.filter(x => x.layout === 'closing')
   if (closings.length > 1)
     report('error', closings[1], 'cierre-repetido', 'Hay más de un cierre.', 'Deje un solo "closing", al final.')

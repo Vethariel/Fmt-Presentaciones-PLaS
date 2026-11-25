@@ -134,6 +134,23 @@ images:
 Cada fila tiene una sola altura; cada imagen toma el ancho que le da su proporción.
 
 ---
+layout: image-text
+side: right
+---
+
+# Gráfico propio
+
+## `::figure::`: un diagrama o gráfico hecho como componente
+
+Los diagramas y gráficos con texto se hacen como **componentes**: usan la letra del tema y se ven nítidos en el PDF.
+
+Los colores salen de las variables del tema.
+
+::figure::
+
+<BarrasTipologias />
+
+---
 layout: code
 ---
 

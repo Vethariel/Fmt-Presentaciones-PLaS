@@ -71,6 +71,8 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 | `section` | Inicio de cada sección | `# Nombre`. Frontmatter: `question` (pregunta que abre la sección), `mesh` (figuras) y, solo en modo secciones, `line` |
 | `closing` | Cierre (solo la última diapositiva) | `# Mensaje` corto («Gracias», una invitación), `## Subtítulo` opcional. El contacto, los logos, la malla de la portada y el QR (si hay `webUrl`) los pone el tema |
 
+**Orden:** `cover`, después, si hace falta, **una** diapositiva de presentación (por ejemplo `team`, con el equipo), luego `agenda` y las secciones. Todo el contenido restante va dentro de una sección; si algo no encaja en ninguna, cree una sección para ello (con `line: plas` en modo secciones). El validador avisa si hay más de una diapositiva de contenido antes de la primera sección.
+
 ### Biblioteca de tipologías de contenido
 
 **Regla: para cada diapositiva, elija la tipología que mejor muestra ese contenido**, no la primera que funcione. Pregúntese qué es el contenido: ¿una comparación?, ¿una imagen que explica?, ¿datos?, ¿una sola idea? La tabla le dice qué tipología corresponde.
@@ -79,8 +81,8 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 |---|---|---|
 | Una explicación con pocas ideas en lista | `default` | Texto y viñetas. Columna derecha opcional con `::aside::` (una ficha, una cifra) |
 | Dos cosas en paralelo o en comparación (antes/después, web/PDF, ventajas/límites) | `two-cols` | Columna izquierda, `::right::`, columna derecha. Cada una puede empezar con `### Encabezado` |
-| Una imagen que explica algo, más lo que hay que ver en ella | `image-text` | Frontmatter `image`, `credit`, `caption`, `side: left\|right`, `fit: cover\|contain`. Texto breve al otro lado |
-| Una imagen que es el contenido (un resultado, un esquema grande, una foto clave) | `image` | Frontmatter `image`, `credit`, `caption`. Una línea de comentario opcional |
+| Una imagen, un diagrama o un gráfico que explica algo, más lo que hay que ver en él | `image-text` | Frontmatter `image`, `credit`, `caption`, `side: left\|right`, `fit: cover\|contain`; o un componente propio en `::figure::`. Texto breve al otro lado |
+| Una imagen, un diagrama o un gráfico que es el contenido (un resultado, un esquema grande, una foto clave) | `image` | Frontmatter `image`, `credit`, `caption`; o un componente propio en `::figure::`. Una línea de comentario opcional |
 | Varios ejemplos visuales del mismo tipo (prototipos, casos, capturas) | `gallery` | Frontmatter `images: [{ src, caption, credit }]`, de 2 a 6. Una línea de comentario opcional |
 | Datos tabulados | `table` | Tabla Markdown y `::comment::` con lo que el público debe ver en ella |
 | Una sola idea que el público debe llevarse (una tesis, una conclusión, un objetivo) | `statement` | Primer párrafo: la idea (máx. ~25 palabras). Un párrafo de apoyo opcional |
@@ -294,12 +296,43 @@ Los componentes propios de la presentación van en `components/`. Todo component
 
 **Use imágenes siempre que el contenido lo permita.** Una foto del prototipo, una captura del sistema, un esquema del método o un gráfico de resultados explican más que una lista. Si una diapositiva habla de algo que se puede ver, muéstrelo.
 
-**De dónde sacarlas, en este orden:**
+**Qué hacer con cada tipo de contenido visual:**
 
-1. **Las que dé el usuario** (fotos, capturas, figuras de sus artículos). Pídalas si el tema las sugiere y no las tiene.
-2. **Propias:** esquemas, diagramas y gráficos que usted dibuje (SVG, un componente Vue en `components/`, un gráfico generado con código). Son la mejor opción para explicar un método o mostrar datos.
-3. **Generadas con IA**, si tiene esa capacidad: ilustraciones y escenas, no datos ni diagramas técnicos. Sin texto dentro de la imagen (sale deformado), sin personas reales identificables, sin logos. Use un estilo coherente en toda la presentación.
-4. **De internet, solo con licencia libre:** CC0, dominio público, CC BY o CC BY-SA, o las licencias de Unsplash, Pexels y Pixabay. Busque en Openverse (openverse.org), Wikimedia Commons, Unsplash o Pexels. **No use** imágenes con licencia NC (no comercial) o ND (sin derivadas), sin licencia clara, con marca de agua, ni de buscadores generales.
+| Necesita mostrar… | Hágalo como | Dónde |
+|---|---|---|
+| Un método, un flujo, una arquitectura (diagrama con texto) | **Componente Vue** en `components/` (HTML y SVG) | `::figure::` de `image` o `image-text`, o en `default` |
+| Cifras, tendencias, comparaciones numéricas | **Gráfico propio**: componente Vue con SVG | `::figure::` de `image` o `image-text`; la tabla, solo para valores exactos |
+| El contexto real (un lugar, un equipo, un aula, un dispositivo) | **Foto** del usuario o de internet con licencia libre | `image`, `image-text` o `gallery` |
+| Una escena o idea sin datos | Ilustración generada con IA, si puede | `image` o `image-text` |
+| Capturas del sistema | Imagen PNG | `image`, `image-text` o `gallery` con `fit: contain` |
+
+**Diagramas y gráficos con texto, como componentes, no como imágenes.** Un componente usa la tipografía del tema, escala con la diapositiva y se ve nítido en el PDF. Un PNG con texto casi siempre queda con letra pequeña: el validador mide los píxeles, no el tamaño del texto. En los componentes, use los colores del tema con variables CSS (`var(--base)`, `var(--dark)`, `var(--soft)`, `var(--ink)`, `var(--muted)`), nunca colores escritos a mano, y letra de al menos 14 px. Si de todos modos usa una imagen con texto, su letra debe medir al menos 24 px cuando la imagen se muestra en la diapositiva (lienzo de 960 × 540).
+
+```md
+---
+layout: image-text
+side: right
+---
+
+# Siniestros por hora del día
+
+El pico ocurre **entre las 5 y las 8 p. m.**, a la salida del trabajo.
+
+::figure::
+
+<SiniestrosPorHora />
+```
+
+**Fotos del contexto.** Si el tema ocurre en un lugar o con objetos reales (una ciudad, un aula, un laboratorio, un dispositivo), incluya al menos una foto que los muestre: le da al público algo concreto antes de los datos.
+
+**De dónde sacar las imágenes, según sus herramientas.** Revise con qué cuenta y use lo que tenga, en este orden:
+
+1. **Las que dé el usuario** (fotos, capturas, figuras de sus artículos). Si el tema las sugiere y no las tiene, pídalas. Si trabaja sin poder preguntar, dígalo en su informe y diga cuáles harían falta.
+2. **Propias, si puede escribir y ejecutar código:** componentes Vue con SVG para diagramas y gráficos (no necesitan ejecutar nada más). Para generar un archivo de imagen puede usar scripts con el Chromium instalado en la raíz (`playwright-chromium`); guarde esos scripts fuera de la presentación, en su directorio temporal, y solo la imagen final en `public/`.
+3. **Generadas con IA, si su entorno tiene generación de imágenes:** ilustraciones y escenas, no datos ni diagramas técnicos. Sin texto dentro de la imagen (sale deformado), sin personas reales identificables, sin logos. Un estilo coherente en toda la presentación.
+4. **De internet, si puede buscar y descargar:** solo con licencia libre (CC0, dominio público, CC BY, CC BY-SA, o las licencias de Unsplash, Pexels y Pixabay). Busque en Openverse (openverse.org), Wikimedia Commons, Unsplash o Pexels, y lea la licencia en la página de la imagen. **No use** imágenes con licencia NC (no comercial) o ND (sin derivadas), sin licencia clara, con marca de agua, ni de buscadores generales.
+
+Si no tiene alguna de estas capacidades, no la simule: siga con la siguiente y dígalo en su informe.
 
 **Cómo incluirlas:**
 
@@ -308,7 +341,7 @@ Los componentes propios de la presentación van en `components/`. Todo component
 - Resolución mínima: 1600 px de ancho para `image`, 1200 para `image-text`, 800 para cada imagen de una galería.
 - En una galería, prefiera imágenes de proporción parecida. El tema las iguala en altura por fila sin recortarlas, pero una panorámica junto a un retrato deja una de las dos diminuta.
 - `fit: contain` muestra la imagen entera (capturas, esquemas); `fit: cover` llena el marco recortando los bordes (fotos).
-- Diga en su informe final qué imágenes usó, de dónde salieron y con qué licencia.
+- En su informe final diga qué herramientas tuvo para imágenes, cuáles usó, y de dónde salió cada imagen y con qué licencia.
 
 ## Componentes del tema
 
