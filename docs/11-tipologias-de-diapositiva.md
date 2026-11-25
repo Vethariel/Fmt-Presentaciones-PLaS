@@ -75,6 +75,18 @@ Un agente sin contexto hizo una presentación de 16 diapositivas con 8 tipologí
 
 `showcase/` muestra un gráfico propio en `::figure::` (`components/BarrasTipologias.vue`).
 
-## 6. Corrección encontrada en el camino
+## 6. Ajustes tras la cuarta prueba (2026-11-25)
+
+El agente buscó una foto con licencia libre en Wikimedia Commons, hizo tres componentes propios (diagrama, línea de prototipos y gráfico) sin colores escritos a mano, y rotuló como ilustrativo un gráfico sin datos.
+
+| Hallazgo | Ajuste |
+|---|---|
+| No se podía comprobar la regla de 14 px en componentes | `plas-check --render` mide el tamaño final de cada texto (incluido SVG escalado): error por debajo de 10 px, aviso por debajo de 12 (`texto-pequeno`). Excluye las etiquetas pequeñas del tema. En esta prueba, el texto más pequeño medía 12,6 px: correcto |
+| El subtítulo de la portada y el cierre pasaba sobre la diagonal del panel | Ancho máximo: 530 px para el título; 470 px para el subtítulo, los párrafos y la firma. `plas-check --render` comprueba cada línea contra la diagonal (`sobre-diagonal`) |
+| Gráficos sin datos reales | Se permite un esquema ilustrativo rotulado como tal, con los resultados marcados como preliminares y los datos pedidos en el informe |
+| `line: plas` en modo línea | Aclarado: en modo línea ningún separador lleva `line` |
+| Otros canales de contacto | Van como párrafo en el cuerpo de `closing` |
+
+## 7. Corrección encontrada en el camino
 
 En `poc/`, `showcase/` y `ejemplos/*`, `npm run check` validaba el `dist/` existente sin compilar. Con una presentación modificada, las reglas de renderizado revisaban una versión vieja. Ahora esos `check` compilan primero (como la plantilla), y `plas-check --render` rechaza un `dist/` anterior a `slides.md`, `components/` o `public/` (`build-viejo`).

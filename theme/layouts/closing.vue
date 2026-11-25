@@ -55,6 +55,9 @@ const webUrl = computed(() => p.config.value.webUrl as string | undefined)
 }
 .plas-closing__mesh { opacity: .55; }
 .plas-closing__text { position: absolute; left: var(--gutter); top: 0; bottom: 0; width: 560px; }
+/* La diagonal del panel va de x = 632 (arriba) a x = 540 (abajo): el texto no debe tocarla */
+.plas-closing__text :deep(h1) { max-width: 530px; }
+.plas-closing__text :deep(h2), .plas-closing__text :deep(p), .plas-closing__byline { max-width: 470px; }
 .plas-closing__text :deep(h1) { font-size: 52px; line-height: 1.05; letter-spacing: -0.025em; }
 .plas-closing__text :deep(h2) { font-size: 22px; margin-top: 16px; }
 .plas-closing__text :deep(p) { color: var(--muted); font-size: 17px; margin-top: 14px; }

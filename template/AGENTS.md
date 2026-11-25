@@ -52,7 +52,7 @@ themeConfig:
 - **Modo línea:** `themeConfig.line` fija el color de toda la presentación. Úselo para sustentaciones, avances y charlas de una sola línea.
 - **Modo secciones:** sin `themeConfig.line`, cada separador (`layout: section`) define su `line` y las diapositivas siguientes heredan ese color.
 
-En modo línea, los separadores **no** llevan `line` (se ignoraría). En modo secciones, es obligatorio en cada separador.
+En modo línea, **ningún** separador lleva `line`, ni siquiera `plas`: toda la presentación tiene el color de la línea, también las secciones del grupo (cómo participar, cierre). En modo secciones, `line` es obligatorio en cada separador.
 
 Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`.
 
@@ -69,7 +69,7 @@ Líneas válidas: `lenguajes`, `educacion`, `embebidos`, `transporte`, `sensado`
 | `cover` | Portada (solo la primera diapositiva) | `# Título`, `## Subtítulo`, un párrafo corto opcional. Autor y datos van en el frontmatter |
 | `agenda` | Índice | Solo `# Agenda`. La lista se genera sola a partir de los separadores |
 | `section` | Inicio de cada sección | `# Nombre`. Frontmatter: `question` (pregunta que abre la sección), `mesh` (figuras) y, solo en modo secciones, `line` |
-| `closing` | Cierre (solo la última diapositiva) | `# Mensaje` corto («Gracias», una invitación), `## Subtítulo` opcional. El contacto, los logos, la malla de la portada y el QR (si hay `webUrl`) los pone el tema |
+| `closing` | Cierre (solo la última diapositiva) | `# Mensaje` corto («Gracias», una invitación), `## Subtítulo` opcional y un párrafo breve opcional para otros canales de contacto (un formulario, un grupo de mensajería). El nombre y el correo de quien presenta, los logos, la malla de la portada y el QR (si hay `webUrl`) los pone el tema |
 
 **Orden:** `cover`, después, si hace falta, **una** diapositiva de presentación (por ejemplo `team`, con el equipo), luego `agenda` y las secciones. Todo el contenido restante va dentro de una sección; si algo no encaja en ninguna, cree una sección para ello (con `line: plas` en modo secciones). El validador avisa si hay más de una diapositiva de contenido antes de la primera sección.
 
@@ -306,7 +306,7 @@ Los componentes propios de la presentación van en `components/`. Todo component
 | Una escena o idea sin datos | Ilustración generada con IA, si puede | `image` o `image-text` |
 | Capturas del sistema | Imagen PNG | `image`, `image-text` o `gallery` con `fit: contain` |
 
-**Diagramas y gráficos con texto, como componentes, no como imágenes.** Un componente usa la tipografía del tema, escala con la diapositiva y se ve nítido en el PDF. Un PNG con texto casi siempre queda con letra pequeña: el validador mide los píxeles, no el tamaño del texto. En los componentes, use los colores del tema con variables CSS (`var(--base)`, `var(--dark)`, `var(--soft)`, `var(--ink)`, `var(--muted)`), nunca colores escritos a mano, y letra de al menos 14 px. Si de todos modos usa una imagen con texto, su letra debe medir al menos 24 px cuando la imagen se muestra en la diapositiva (lienzo de 960 × 540).
+**Diagramas y gráficos con texto, como componentes, no como imágenes.** Un componente usa la tipografía del tema, escala con la diapositiva y se ve nítido en el PDF. Un PNG con texto casi siempre queda con letra pequeña: el validador mide los píxeles, no el tamaño del texto. En los componentes, use los colores del tema con variables CSS (`var(--base)`, `var(--dark)`, `var(--soft)`, `var(--ink)`, `var(--muted)`), nunca colores escritos a mano, y letra de al menos 14 px. Un SVG con `viewBox` se reduce al encajar en la diapositiva: el validador mide el tamaño final del texto y marca error por debajo de 10 px y aviso por debajo de 12. Si de todos modos usa una imagen con texto, su letra debe medir al menos 24 px cuando la imagen se muestra en la diapositiva (lienzo de 960 × 540).
 
 ```md
 ---
@@ -322,6 +322,8 @@ El pico ocurre **entre las 5 y las 8 p. m.**, a la salida del trabajo.
 
 <SiniestrosPorHora />
 ```
+
+**Gráficos sin datos.** Si el pedido describe una tendencia pero no da los datos, no invente cifras. Puede dibujar un **esquema ilustrativo** (formas sin valores en los ejes) si cumple tres condiciones: la diapositiva dice «Esquema ilustrativo, no son mediciones» junto al gráfico; el subtítulo o el texto dicen que los resultados son preliminares o que faltan los datos; y su informe pide los datos reales para reemplazarlo. Si puede preguntar, pida los datos antes.
 
 **Fotos del contexto.** Si el tema ocurre en un lugar o con objetos reales (una ciudad, un aula, un laboratorio, un dispositivo), incluya al menos una foto que los muestre: le da al público algo concreto antes de los datos.
 
@@ -404,6 +406,8 @@ El tema dibuja las aristas de la figura con trazo grueso y teje alrededor una ma
 | Niveles de anidación | máx. 2 |
 | Palabras por diapositiva | máx. recomendado 110 (aviso) |
 | Figuras de la malla | Portada y cada separador: 2 a 4 propias, con `label`; 6–18 nodos y 6–28 aristas cada una; sin copias (ni retocadas) de los ejemplos o de otras presentaciones del repositorio, sin repeticiones |
+| Tamaño del texto | Todo texto, también el de diagramas y gráficos, se ve a 12 px o más (error por debajo de 10) |
+| Portada y cierre | Ningún texto toca la diagonal del panel; el tema limita el ancho, pero una palabra muy larga puede salirse |
 | Tipologías | Máx. 2 seguidas iguales; ninguna en más de la mitad de las de contenido; al menos 3 distintas (con 6 o más de contenido) |
 | Imágenes | En `public/`, con `credit` y licencia libre; sin URL externas |
 | Cierre | Un solo `closing`, al final |

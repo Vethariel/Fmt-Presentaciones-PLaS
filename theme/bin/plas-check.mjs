@@ -436,6 +436,57 @@ async function renderChecks() {
             if (Math.round(place.getBoundingClientRect().height / lh) > 1)
               out.push({ rule: 'lugar-largo', level: 'aviso', msg: 'El lugar de la portada ocupa más de una línea.' })
           }
+          // Texto de la portada o el cierre sobre la diagonal del panel
+          const panel = root.querySelector('.plas-cover__panel, .plas-closing__panel')
+          const column = root.querySelector('.plas-cover__text, .plas-closing__text')
+          if (panel && column) {
+            const P = panel.getBoundingClientRect()
+            const xTop = P.left + 0.22 * P.width // clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%)
+            const diag = y => xTop - (xTop - P.left) * ((y - P.top) / P.height)
+            const walker = document.createTreeWalker(column, NodeFilter.SHOW_TEXT)
+            let crossed = null
+            while (!crossed && walker.nextNode()) {
+              if (!walker.currentNode.textContent.trim())
+                continue
+              const range = document.createRange()
+              range.selectNodeContents(walker.currentNode)
+              for (const r of range.getClientRects()) {
+                if (r.width > 0 && r.right > diag(r.bottom) - 8) {
+                  crossed = walker.currentNode.textContent.trim().slice(0, 40)
+                  break
+                }
+              }
+            }
+            if (crossed)
+              out.push({ rule: 'sobre-diagonal', msg: `"${crossed}" toca la diagonal del panel.` })
+          }
+          // Texto ilegible: tamaño real en la diapositiva (incluye SVG escalado y transformaciones)
+          {
+            // Etiquetas pequeñas del propio tema (créditos, rótulos, fecha): su tamaño es deliberado
+            const skip = '.plas-chrome, .plas-mesh, .plas-stripe, .plas-toc, .plas-img__credit, .plas-gallery__credit, .plas-interactive__qr, .plas-interactive__badge, .plas-project__kind, .plas-frames__n, .plas-closing__qr, .plas-cover__date, .plas-frames'  // las tiras de fotogramas son la versión impresa reducida de una animación
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+            let min = null
+            while (walker.nextNode()) {
+              const t = walker.currentNode
+              const el = t.parentElement
+              if (!el || !/[\p{L}\p{N}]/u.test(t.textContent) || el.closest(skip))
+                continue
+              const r = el.getBoundingClientRect()
+              if (r.width < 1 || r.height < 1)
+                continue
+              const fs = Number.parseFloat(getComputedStyle(el).fontSize)
+              let scale = 1
+              if (el instanceof SVGElement)
+                scale = Math.hypot(el.getScreenCTM()?.a ?? 1, el.getScreenCTM()?.b ?? 0)
+              else if (el.offsetWidth > 0)
+                scale = r.width / el.offsetWidth
+              const size = fs * scale
+              if (!min || size < min.size)
+                min = { size, text: t.textContent.trim().slice(0, 30) }
+            }
+            if (min && min.size < 12)
+              out.push({ rule: 'texto-pequeno', level: min.size < 10 ? 'error' : 'aviso', msg: `"${min.text}" se ve a ${min.size.toFixed(1)} px (mín. 10; recomendado 12 o más).` })
+          }
           const h1 = root.querySelector('.plas-content__head h1')
           if (h1) {
             const lh = Number.parseFloat(getComputedStyle(h1).lineHeight)
@@ -453,6 +504,8 @@ async function renderChecks() {
             'sin-render': 'Revise que la maqueta exista y que el tema cargue.',
             'titulo-portada-largo': 'Acorte el título; el detalle va en el subtítulo (## …).',
             'lugar-largo': 'Acorte "place": omita lo que ya dicen los logos (universidad, facultad).',
+            'sobre-diagonal': 'Acorte el título o el subtítulo; el tema limita el ancho, pero un texto sin espacios puede salirse.',
+            'texto-pequeno': 'Agrande la letra o simplifique el diagrama: un componente con viewBox se reduce al encajar. Deje menos texto, con letra de 14 px o más a tamaño final.',
           }[f.rule]
           report(f.level ?? 'error', slide, f.rule, `[${mode}] ${f.msg}`, fix)
         }

@@ -34,6 +34,6 @@ defineProps<{
 .plas-project__title { margin: 10px 0 6px !important; font-size: 19px !important; color: var(--deep) !important; }
 .plas-project__body :deep(p) { margin: 0 0 10px; font-size: var(--fs-small); }
 .plas-project__meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; }
-.plas-project__meta dt { font: 600 12px / 1.45 var(--font-display); color: var(--dark); }
+.plas-project__meta dt { font: 600 12.5px / 1.45 var(--font-display); color: var(--dark); }
 .plas-project__meta dd { margin: 0; color: var(--ink); }
 </style>

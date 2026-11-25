@@ -80,7 +80,7 @@ const summary = computed(() => {
   --c: var(--ink);
 }
 .lexer__tok b { font: 600 16px / 1.2 var(--font-code); color: var(--c); }
-.lexer__tok small { font: 500 9.5px / 1 var(--font-display); color: var(--muted); }
+.lexer__tok small { font: 500 12.5px / 1 var(--font-display); color: var(--muted); }
 [data-kind='palabra clave'] { --c: #0E6B5C; }
 [data-kind='cadena'] { --c: #7A530E; }
 [data-kind='nombre'] { --c: #2C5D98; }

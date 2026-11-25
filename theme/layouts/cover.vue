@@ -58,6 +58,9 @@ const figures = computed(() => resolveFigures(props.mesh))
 .plas-cover__mesh { opacity: .55; }
 /* Columna izquierda: TitleBlock centra el título en la diapositiva y ancla la firma */
 .plas-cover__text { position: absolute; left: var(--gutter); top: 0; bottom: 0; width: 560px; }
+/* La diagonal del panel va de x = 632 (arriba) a x = 540 (abajo): el texto no debe tocarla */
+.plas-cover__text :deep(h1) { max-width: 530px; }
+.plas-cover__text :deep(h2), .plas-cover__text :deep(p), .plas-cover__byline { max-width: 470px; }
 .plas-cover__text :deep(h1) { font-size: 52px; line-height: 1.05; letter-spacing: -0.025em; }
 .plas-cover__text :deep(h2) { font-size: 22px; margin-top: 16px; }
 .plas-cover__text :deep(p) { color: var(--muted); font-size: 17px; margin-top: 14px; }

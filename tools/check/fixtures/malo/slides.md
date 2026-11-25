@@ -6,6 +6,8 @@ place: Departamento de Ingeniería de Sistemas e Industrial · Facultad de Ingen
 
 # Presentación de prueba con errores y un título de portada tan largo que ocupa más de tres líneas completas en la portada
 
+## Subtítulo con una palabra interminable: Electroencefalografistamentedesproporcionadísimamente
+
 ---
 layout: section
 mesh: [libro, cometa, { nodes: [[0, 0], [1, 1], [2, 0]], edges: [[0, 1]] }]
@@ -150,3 +152,11 @@ layout: default
 ---
 
 # Después del cierre
+
+---
+layout: default
+---
+
+# Texto diminuto
+
+<span style="font-size: 7px">Este texto no se puede leer desde el fondo de la sala.</span>
