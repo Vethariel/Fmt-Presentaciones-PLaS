@@ -230,7 +230,7 @@ deck.slides.forEach((s, i) => {
   if (layout === 'table' && !/^\s*\|.*\|\s*$/m.test(text))
     report('error', slide, 'tabla-faltante', 'La maqueta "table" no tiene una tabla.', 'Escriba la tabla en Markdown (| … |) o use otra maqueta.')
   if (layout === 'table' && !/^::comment::\s*$/m.test(content))
-    report('error', slide, 'tabla-sin-comentario', 'La tabla no tiene comentario.', 'Agregue "::comment::" con lo que el público debe ver en la tabla.')
+    report('aviso', slide, 'tabla-sin-comentario', 'La tabla no tiene comentario.', 'Agregue "::comment::" con lo que el público debe ver en la tabla.')
   if (layout === 'quote') {
     if (!/^>\s/m.test(text))
       report('error', slide, 'cita-faltante', 'La maqueta "quote" no tiene una cita (> …).', 'Escriba la cita con ">" o use otra maqueta.')
@@ -323,14 +323,14 @@ deck.slides.forEach((s, i) => {
     }
     run = run.length && run[0].layout === x.layout ? [...run, x] : [x]
     if (run.length === LIMITS.sameInARow + 1)
-      report('error', x, 'tipologia-repetida', `Tres diapositivas seguidas con la maqueta "${x.layout}" (diap. ${run.map(r => r.no).join(', ')}).`, 'Elija para alguna la tipología que mejor muestre su contenido: two-cols, image-text, table, statement, gallery… (AGENTS.md, «Biblioteca de tipologías»).')
+      report('aviso', x, 'tipologia-repetida', `Tres diapositivas seguidas con la maqueta "${x.layout}" (diap. ${run.map(r => r.no).join(', ')}).`, 'Elija para alguna la tipología que mejor muestre su contenido: two-cols, image-text, table, statement, gallery… (AGENTS.md, «Maquetas»).')
   }
   if (content.length >= LIMITS.varietyFrom) {
     const count = {}
     for (const x of content) count[x.layout] = (count[x.layout] ?? 0) + 1
     const [top, n] = Object.entries(count).sort((a, b) => b[1] - a[1])[0]
     if (n / content.length > LIMITS.dominantShare)
-      report('error', null, 'tipologia-dominante', `"${top}" ocupa ${n} de ${content.length} diapositivas de contenido (máx. la mitad).`, 'Revise cuáles se muestran mejor con otra tipología.')
+      report('aviso', null, 'tipologia-dominante', `"${top}" ocupa ${n} de ${content.length} diapositivas de contenido (máx. la mitad).`, 'Revise cuáles se muestran mejor con otra tipología.')
     if (Object.keys(count).length < LIMITS.minKinds)
       report('aviso', null, 'poca-variedad', `Solo ${Object.keys(count).length} tipologías en ${content.length} diapositivas de contenido.`, `Use al menos ${LIMITS.minKinds}, según lo que pida cada contenido.`)
     if (!content.some(x => IMAGE_LAYOUTS.includes(x.layout) || x.layout === 'team' || x.visual))

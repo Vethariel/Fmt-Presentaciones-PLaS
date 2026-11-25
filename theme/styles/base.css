@@ -25,6 +25,14 @@
   --slidev-code-margin: 0;
 }
 
+/* Regla: sin ligaduras. En una presentación de lenguajes, ">=" son dos caracteres, no "≥".
+   Con !important porque el atajo `font:` de un componente reinicia estas propiedades. */
+.slidev-layout.plas,
+.slidev-layout.plas * {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+
 /* Regla: nunca texto justificado (docs/01 §4.3, docs/02 §4.2) */
 .slidev-layout.plas * {
   text-align: inherit;
@@ -126,6 +134,7 @@
 /* Código en línea */
 .slidev-layout.plas :not(pre) > code {
   font-family: var(--font-code);
+  font-variant-ligatures: none;
   font-size: 0.85em;
   padding: 1px 6px;
   border-radius: 4px;

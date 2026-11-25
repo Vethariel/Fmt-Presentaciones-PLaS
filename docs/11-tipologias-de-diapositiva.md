@@ -35,8 +35,8 @@ Del catálogo del doc. 03 §6 quedan pendientes `cover-brand`, `diagram` y `math
 
 | Regla | Nivel |
 |---|---|
-| Máx. 2 diapositivas seguidas con la misma tipología (un separador corta la racha) | Error |
-| Ninguna tipología en más de la mitad de las de contenido (con 6 o más) | Error |
+| Máx. 2 diapositivas seguidas con la misma tipología (un separador corta la racha) | Aviso (§8) |
+| Ninguna tipología en más de la mitad de las de contenido (con 6 o más) | Aviso (§8) |
 | Al menos 3 tipologías distintas (con 6 o más de contenido) | Aviso |
 | Sin imágenes (maquetas de imagen, `team` o diagramas propios de `components/`) | Aviso |
 | Cada maqueta con lo suyo: imagen, columna derecha, tabla y comentario, cita y fuente, 2–6 imágenes, 2–8 personas | Error |
@@ -105,6 +105,15 @@ Trae una tabla «Evite / Prefiera» y una sección de ejemplo contada con títul
 
 No hay regla en el validador: juzgar si una frase es clara depende del criterio del agente. Los ejemplos de la propia guía se corrigieron porque tenían el mismo defecto, y un agente imita los ejemplos más que las reglas.
 
-## 8. Corrección encontrada en el camino
+## 8. Menos reglas (2026-11-25)
+
+Después de cinco pruebas, `template/AGENTS.md` había pasado de 220 a 485 líneas. Un exceso de reglas diluye las importantes y lleva al agente a cumplir en lugar de pensar, y el ajuste fino es del usuario. Se decidió:
+
+- **Corregir en el tema, no en la guía.** Las ligaduras de JetBrains Mono convertían `>=` en `≥`, lo que confunde en una clase de análisis léxico. El tema las desactiva en todo (`base.css`, con `!important`, porque el atajo `font:` de un componente las reactiva). No se agregó ninguna regla.
+- **La guía, solo para lo que el validador no enseña:** narrativa, elección de tipología, imágenes, qué dibujar y paridad. Los límites comprobados por `plas-check` se nombran sin detalle, porque el mensaje del validador dice qué corregir. La guía pasó a unas 190 líneas.
+- **Error solo para lo que rompe el formato.** Pasan a aviso: `tipologia-repetida`, `tipologia-dominante` y `tabla-sin-comentario`. El agente puede dejar un aviso si tiene una razón, y debe decirlo en su informe.
+- No se agregaron las reglas propuestas tras la quinta prueba (líneas de código, número de diapositivas, pie de `<Interactive>`): el agente las resolvió con su criterio.
+
+## 9. Corrección encontrada en el camino
 
 En `poc/`, `showcase/` y `ejemplos/*`, `npm run check` validaba el `dist/` existente sin compilar. Con una presentación modificada, las reglas de renderizado revisaban una versión vieja. Ahora esos `check` compilan primero (como la plantilla), y `plas-check --render` rechaza un `dist/` anterior a `slides.md`, `components/` o `public/` (`build-viejo`).
